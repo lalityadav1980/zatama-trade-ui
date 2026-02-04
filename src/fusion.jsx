@@ -1798,6 +1798,12 @@ const getDateFilterOptions = () => {
   
   return [
     { 
+      label: 'All Time', 
+      value: 'all', 
+      startDate: null, 
+      endDate: null 
+    },
+    { 
       label: 'Today', 
       value: 'today', 
       startDate: today.clone().startOf('day'), 
@@ -1867,7 +1873,7 @@ const Fusion = () => {
   const [csvExportType, setCsvExportType] = useState('summary'); // 'summary' | 'detailed'
 
   // Date filtering state
-  const [dateFilter, setDateFilter] = useState('today'); // 'today', 'yesterday', 'last7days', etc.
+  const [dateFilter, setDateFilter] = useState('all'); // 'all', 'today', 'yesterday', 'last7days', etc.
   const [customStartDate, setCustomStartDate] = useState(null);
   const [customEndDate, setCustomEndDate] = useState(null);
   const [dateFilterAnchor, setDateFilterAnchor] = useState(null);
@@ -2086,6 +2092,12 @@ const Fusion = () => {
   };
 
   const filterGroupsByDate = (groupsData) => {
+    // If 'all' filter is selected, return all data without filtering
+    if (dateFilter === 'all') {
+      console.log('🔍 "All Time" filter selected, showing all data');
+      return groupsData;
+    }
+    
     const range = getSelectedDateRange();
     if (!range || !range.startDate || !range.endDate) {
       console.log('🔍 No date range specified, showing all data');

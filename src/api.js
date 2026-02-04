@@ -14,6 +14,7 @@ const httpApi = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
+  withCredentials: false, // Explicitly disable credentials for CORS
 });
 
 // Clean/normalize JSON responses (handle NaN safely)

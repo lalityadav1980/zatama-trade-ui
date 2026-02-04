@@ -317,7 +317,9 @@ const OrderBook = () => {
 
       switch (filters.filterType) {
         case 'current-date':
-          url = '/orders_book/current-date';
+          url = '/orders_book';
+          // Add current date as parameter instead of using separate endpoint
+          params.date_filter = 'today';
           break;
         case 'date-range':
           url = '/orders_book/date-range';
