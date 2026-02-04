@@ -15,7 +15,19 @@ const httpApi = axios.create({
     'Accept': 'application/json',
   },
   withCredentials: false, // Explicitly disable credentials for CORS
+  timeout: 30000, // 30 second timeout
 });
+
+// Add request interceptor for better CORS handling
+httpApi.interceptors.request.use(
+  (config) => {
+    // Ensure headers are set for CORS
+    config.headers['Accept'] = 'application/json';
+    config.headers['Content-Type'] = 'application/json';
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // Clean/normalize JSON responses (handle NaN safely)
 httpApi.interceptors.response.use(
@@ -35,7 +47,18 @@ httpApi.interceptors.response.use(
     }
     return response;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    // Better CORS error logging
+    if (error.message === 'Network Error') {
+      console.error('CORS/Network Error:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        baseURL: error.config?.baseURL,
+        message: 'Check if backend API has CORS headers configured'
+      });
+    }
+    return Promise.reject(error);
+  }
 );
 
 /**
