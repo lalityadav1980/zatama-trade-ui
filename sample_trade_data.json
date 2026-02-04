@@ -1,0 +1,1861 @@
+{
+    "data": [
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22119.55,
+            "date": "Fri, 01 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22161.85,
+            "date": "Fri, 01 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22176.5,
+            "date": "Fri, 01 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22196.95,
+            "date": "Fri, 01 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22200.05,
+            "date": "Fri, 01 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22178.7,
+            "date": "Fri, 01 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22172.45,
+            "date": "Fri, 01 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22208.7,
+            "date": "Fri, 01 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22238.8,
+            "date": "Fri, 01 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22279.15,
+            "date": "Fri, 01 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22283.95,
+            "date": "Fri, 01 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22286.45,
+            "date": "Fri, 01 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22291.25,
+            "date": "Fri, 01 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14":NaN,
+            "Sell": false,
+            "close": 22305.8,
+            "date": "Fri, 01 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 86.28202541860115,
+            "Sell": false,
+            "close": 22299.4,
+            "date": "Fri, 01 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 82.32916265640046,
+            "Sell": false,
+            "close": 22288.35,
+            "date": "Fri, 01 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 84.16082770196131,
+            "Sell": false,
+            "close": 22314.25,
+            "date": "Fri, 01 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 84.18808722476318,
+            "Sell": false,
+            "close": 22314.65,
+            "date": "Fri, 01 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 84.54261612967022,
+            "Sell": false,
+            "close": 22319.6,
+            "date": "Fri, 01 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 85.26499189012952,
+            "Sell": false,
+            "close": 22329.65,
+            "date": "Fri, 01 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 85.37121573848908,
+            "Sell": false,
+            "close": 22331.1,
+            "date": "Fri, 01 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 85.42972402433,
+            "Sell": false,
+            "close": 22331.85,
+            "date": "Fri, 01 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 86.14201225355146,
+            "Sell": false,
+            "close": 22340.8,
+            "date": "Fri, 01 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 80.59518553390662,
+            "Sell": false,
+            "close": 22329.1,
+            "date": "Fri, 01 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 79.16412934220524,
+            "Sell": false,
+            "close": 22326.05,
+            "date": "Fri, 01 Mar 2024 09:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 84.80760854089831,
+            "Sell": false,
+            "close": 22385.3,
+            "date": "Sat, 02 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 85.93936816980457,
+            "Sell": false,
+            "close": 22401.65,
+            "date": "Sat, 02 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 82.98718026085601,
+            "Sell": false,
+            "close": 22394.4,
+            "date": "Sat, 02 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 82.48212418442324,
+            "Sell": false,
+            "close": 22393.2,
+            "date": "Sat, 02 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 75.77731734805477,
+            "Sell": false,
+            "close": 22377.0,
+            "date": "Sat, 02 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 75.1881838743261,
+            "Sell": false,
+            "close": 22375.55,
+            "date": "Sat, 02 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 74.26620525976125,
+            "Sell": false,
+            "close": 22373.4,
+            "date": "Sat, 02 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 75.42109733471398,
+            "Sell": false,
+            "close": 22381.05,
+            "date": "Mon, 04 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 77.52926234000297,
+            "Sell": false,
+            "close": 22395.9,
+            "date": "Mon, 04 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 68.15968143620893,
+            "Sell": false,
+            "close": 22373.8,
+            "date": "Mon, 04 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 71.75283325981272,
+            "Sell": false,
+            "close": 22395.4,
+            "date": "Mon, 04 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 74.50030286540094,
+            "Sell": false,
+            "close": 22414.55,
+            "date": "Mon, 04 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 75.81021198369385,
+            "Sell": false,
+            "close": 22424.45,
+            "date": "Mon, 04 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 59.82941934255695,
+            "Sell": false,
+            "close": 22376.65,
+            "date": "Mon, 04 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 64.52943879271169,
+            "Sell": false,
+            "close": 22404.55,
+            "date": "Mon, 04 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 61.26458648613957,
+            "Sell": false,
+            "close": 22392.75,
+            "date": "Mon, 04 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 63.898438678100966,
+            "Sell": false,
+            "close": 22408.55,
+            "date": "Mon, 04 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 60.67847520829067,
+            "Sell": false,
+            "close": 22397.1,
+            "date": "Mon, 04 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 61.800968957053215,
+            "Sell": false,
+            "close": 22403.3,
+            "date": "Mon, 04 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 63.682777730749116,
+            "Sell": false,
+            "close": 22413.75,
+            "date": "Mon, 04 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 63.249285887308446,
+            "Sell": false,
+            "close": 22412.4,
+            "date": "Mon, 04 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 59.410283078216594,
+            "Sell": false,
+            "close": 22400.5,
+            "date": "Mon, 04 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 59.67607669781819,
+            "Sell": false,
+            "close": 22401.7,
+            "date": "Mon, 04 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50":NaN,
+            "RSI14": 59.50124184969926,
+            "Sell": false,
+            "close": 22401.2,
+            "date": "Mon, 04 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22330.620000000006,
+            "RSI14": 61.155764684370986,
+            "Sell": false,
+            "close": 22407.95,
+            "date": "Mon, 04 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22333.20941176471,
+            "RSI14": 56.96045645429349,
+            "Sell": false,
+            "close": 22396.65,
+            "date": "Mon, 04 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22336.934532871976,
+            "RSI14": 64.32008489394661,
+            "Sell": false,
+            "close": 22428.2,
+            "date": "Mon, 04 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22340.435139426016,
+            "RSI14": 63.577904027329026,
+            "Sell": false,
+            "close": 22426.2,
+            "date": "Mon, 04 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22343.078859448524,
+            "RSI14": 57.07106748102249,
+            "Sell": false,
+            "close": 22407.85,
+            "date": "Mon, 04 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22345.66008064662,
+            "RSI14": 57.34011025575177,
+            "Sell": false,
+            "close": 22408.9,
+            "date": "Mon, 04 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22347.965567680087,
+            "RSI14": 55.74556460341914,
+            "Sell": false,
+            "close": 22404.45,
+            "date": "Mon, 04 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22349.91397679067,
+            "RSI14": 53.30613003628838,
+            "Sell": false,
+            "close": 22397.65,
+            "date": "Mon, 04 Mar 2024 09:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22350.54872279888,
+            "RSI14": 43.74187073145526,
+            "Sell": false,
+            "close": 22366.1,
+            "date": "Tue, 05 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22351.5056356303,
+            "RSI14": 46.63431415896968,
+            "Sell": false,
+            "close": 22374.95,
+            "date": "Tue, 05 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22351.334826389895,
+            "RSI14": 39.725070995798426,
+            "Sell": true,
+            "close": 22347.15,
+            "date": "Tue, 05 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22350.62169594323,
+            "RSI14": 36.77051315002803,
+            "Sell": true,
+            "close": 22333.15,
+            "date": "Tue, 05 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22348.652217670948,
+            "RSI14": 30.968081105036045,
+            "Sell": true,
+            "close": 22300.4,
+            "date": "Tue, 05 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22347.010954232872,
+            "RSI14": 33.186917268997625,
+            "Sell": false,
+            "close": 22306.8,
+            "date": "Tue, 05 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22345.753661910014,
+            "RSI14": 36.00767319846038,
+            "Sell": false,
+            "close": 22314.95,
+            "date": "Tue, 05 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22343.514302619424,
+            "RSI14": 31.400603177019835,
+            "Sell": true,
+            "close": 22288.65,
+            "date": "Tue, 05 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22341.59413388925,
+            "RSI14": 33.4574876283275,
+            "Sell": false,
+            "close": 22294.55,
+            "date": "Tue, 05 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22340.931618834773,
+            "RSI14": 42.882441279788935,
+            "Sell": false,
+            "close": 22324.7,
+            "date": "Tue, 05 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22340.88332005694,
+            "RSI14": 46.91120263308219,
+            "Sell": false,
+            "close": 22339.7,
+            "date": "Tue, 05 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22340.87220946647,
+            "RSI14": 47.15206329498925,
+            "Sell": false,
+            "close": 22340.6,
+            "date": "Tue, 05 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22339.85565223249,
+            "RSI14": 41.388719558768926,
+            "Sell": true,
+            "close": 22314.95,
+            "date": "Tue, 05 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22339.576999203764,
+            "RSI14": 46.2945185692082,
+            "Sell": false,
+            "close": 22332.75,
+            "date": "Tue, 05 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22342.052410999695,
+            "RSI14": 60.34231728437619,
+            "Sell": false,
+            "close": 22402.7,
+            "date": "Tue, 05 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22343.975845862453,
+            "RSI14": 57.64930288529959,
+            "Sell": false,
+            "close": 22391.1,
+            "date": "Tue, 05 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22346.12777347569,
+            "RSI14": 58.96689053950539,
+            "Sell": false,
+            "close": 22398.85,
+            "date": "Tue, 05 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22347.554135300175,
+            "RSI14": 55.07404923403478,
+            "Sell": false,
+            "close": 22382.5,
+            "date": "Tue, 05 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22348.408875092326,
+            "RSI14": 52.095197804409096,
+            "Sell": false,
+            "close": 22369.35,
+            "date": "Tue, 05 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22348.669311363214,
+            "RSI14": 48.99191591800534,
+            "Sell": false,
+            "close": 22355.05,
+            "date": "Tue, 05 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22348.57835797642,
+            "RSI14": 47.15161841223565,
+            "Sell": true,
+            "close": 22346.35,
+            "date": "Tue, 05 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22349.551755702836,
+            "RSI14": 53.056024019301205,
+            "Sell": false,
+            "close": 22373.4,
+            "date": "Tue, 05 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22350.357569204687,
+            "RSI14": 52.28851732360093,
+            "Sell": false,
+            "close": 22370.1,
+            "date": "Tue, 05 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22350.486684137835,
+            "RSI14": 48.520528223774576,
+            "Sell": false,
+            "close": 22353.65,
+            "date": "Tue, 05 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22350.800931818703,
+            "RSI14": 49.672052373511285,
+            "Sell": false,
+            "close": 22358.5,
+            "date": "Tue, 05 Mar 2024 09:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22349.893052139538,
+            "RSI14": 43.07220111952668,
+            "Sell": true,
+            "close": 22327.65,
+            "date": "Wed, 06 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22350.442344212497,
+            "RSI14": 51.26610220448652,
+            "Sell": false,
+            "close": 22363.9,
+            "date": "Wed, 06 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22347.768134635535,
+            "RSI14": 37.999106891297316,
+            "Sell": true,
+            "close": 22282.25,
+            "date": "Wed, 06 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22346.483109747867,
+            "RSI14": 44.23300008049149,
+            "Sell": false,
+            "close": 22315.0,
+            "date": "Wed, 06 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22344.130830934224,
+            "RSI14": 40.423936247129056,
+            "Sell": true,
+            "close": 22286.5,
+            "date": "Wed, 06 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22342.83550423092,
+            "RSI14": 44.839394753006246,
+            "Sell": false,
+            "close": 22311.1,
+            "date": "Wed, 06 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22340.426268770883,
+            "RSI14": 40.898313179596094,
+            "Sell": true,
+            "close": 22281.4,
+            "date": "Wed, 06 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22337.791905289672,
+            "RSI14": 39.862907606864816,
+            "Sell": true,
+            "close": 22273.25,
+            "date": "Wed, 06 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22336.39026194498,
+            "RSI14": 45.147606496118414,
+            "Sell": false,
+            "close": 22302.05,
+            "date": "Wed, 06 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22332.910251672627,
+            "RSI14": 38.30095103047386,
+            "Sell": true,
+            "close": 22247.65,
+            "date": "Wed, 06 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22329.649065332524,
+            "RSI14": 38.68749409718006,
+            "Sell": false,
+            "close": 22249.75,
+            "date": "Wed, 06 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22326.88635688811,
+            "RSI14": 40.49415336715044,
+            "Sell": false,
+            "close": 22259.2,
+            "date": "Wed, 06 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22324.62022524544,
+            "RSI14": 42.408726408615784,
+            "Sell": false,
+            "close": 22269.1,
+            "date": "Wed, 06 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22322.886098765226,
+            "RSI14": 44.59977379909413,
+            "Sell": false,
+            "close": 22280.4,
+            "date": "Wed, 06 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22320.988604696002,
+            "RSI14": 43.665673517219965,
+            "Sell": true,
+            "close": 22274.5,
+            "date": "Wed, 06 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22320.087090786354,
+            "RSI14": 48.309462032837466,
+            "Sell": false,
+            "close": 22298.0,
+            "date": "Wed, 06 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22318.80524408885,
+            "RSI14": 46.44950421057721,
+            "Sell": true,
+            "close": 22287.4,
+            "date": "Wed, 06 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22319.12660706576,
+            "RSI14": 53.631826477109534,
+            "Sell": false,
+            "close": 22327.0,
+            "date": "Wed, 06 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22321.55889698475,
+            "RSI14": 61.27951422158795,
+            "Sell": false,
+            "close": 22381.15,
+            "date": "Wed, 06 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22324.770312789267,
+            "RSI14": 63.91877621109978,
+            "Sell": false,
+            "close": 22403.45,
+            "date": "Wed, 06 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22328.26167307204,
+            "RSI14": 65.10753443539056,
+            "Sell": false,
+            "close": 22413.8,
+            "date": "Wed, 06 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22333.606313343724,
+            "RSI14": 70.2784161619263,
+            "Sell": false,
+            "close": 22464.55,
+            "date": "Wed, 06 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22337.553124585145,
+            "RSI14": 64.16450583154332,
+            "Sell": false,
+            "close": 22434.25,
+            "date": "Wed, 06 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22342.87653146416,
+            "RSI14": 68.02522085783724,
+            "Sell": false,
+            "close": 22473.3,
+            "date": "Wed, 06 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22348.25588317145,
+            "RSI14": 68.6538662668915,
+            "Sell": false,
+            "close": 22480.05,
+            "date": "Wed, 06 Mar 2024 09:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22353.534083831393,
+            "RSI14": 68.92677875824499,
+            "Sell": false,
+            "close": 22482.85,
+            "date": "Thu, 07 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22358.232747210553,
+            "RSI14": 66.80168969134895,
+            "Sell": false,
+            "close": 22473.35,
+            "date": "Thu, 07 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22362.688325751315,
+            "RSI14": 66.45330578717225,
+            "Sell": false,
+            "close": 22471.85,
+            "date": "Thu, 07 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22367.561332584595,
+            "RSI14": 68.24847579471961,
+            "Sell": false,
+            "close": 22486.95,
+            "date": "Thu, 07 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22372.09226071853,
+            "RSI14": 67.26019032265778,
+            "Sell": false,
+            "close": 22483.1,
+            "date": "Thu, 07 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22374.904328925648,
+            "RSI14": 58.02361930332536,
+            "Sell": false,
+            "close": 22443.8,
+            "date": "Thu, 07 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22378.23161014425,
+            "RSI14": 60.400437120270865,
+            "Sell": false,
+            "close": 22459.75,
+            "date": "Thu, 07 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22382.953899942513,
+            "RSI14": 65.527177702844,
+            "Sell": false,
+            "close": 22498.65,
+            "date": "Thu, 07 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22387.34786465065,
+            "RSI14": 64.68101145233179,
+            "Sell": false,
+            "close": 22495.0,
+            "date": "Thu, 07 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22391.01069348788,
+            "RSI14": 61.350150145119585,
+            "Sell": false,
+            "close": 22480.75,
+            "date": "Thu, 07 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22394.900470213845,
+            "RSI14": 62.72116970724533,
+            "Sell": false,
+            "close": 22490.2,
+            "date": "Thu, 07 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22398.49653020546,
+            "RSI14": 61.82148436604399,
+            "Sell": false,
+            "close": 22486.6,
+            "date": "Thu, 07 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22401.68098000132,
+            "RSI14": 60.04371537631391,
+            "Sell": false,
+            "close": 22479.7,
+            "date": "Thu, 07 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22405.393490589504,
+            "RSI14": 62.821970333903074,
+            "Sell": false,
+            "close": 22496.35,
+            "date": "Thu, 07 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22409.136883115407,
+            "RSI14": 63.55945804252765,
+            "Sell": false,
+            "close": 22500.85,
+            "date": "Thu, 07 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22413.058966130488,
+            "RSI14": 64.94085960353677,
+            "Sell": false,
+            "close": 22509.15,
+            "date": "Thu, 07 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22416.542928243016,
+            "RSI14": 62.704814298371815,
+            "Sell": false,
+            "close": 22501.9,
+            "date": "Thu, 07 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22420.19026439035,
+            "RSI14": 64.10909860780112,
+            "Sell": false,
+            "close": 22509.55,
+            "date": "Thu, 07 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22423.833783433864,
+            "RSI14": 64.77198940370484,
+            "Sell": false,
+            "close": 22513.1,
+            "date": "Thu, 07 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22426.78932133842,
+            "RSI14": 60.09199457459942,
+            "Sell": false,
+            "close": 22499.2,
+            "date": "Thu, 07 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22430.287779325146,
+            "RSI14": 63.522530739640324,
+            "Sell": false,
+            "close": 22516.0,
+            "date": "Thu, 07 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22432.529435037886,
+            "RSI14": 54.887619299994164,
+            "Sell": false,
+            "close": 22487.45,
+            "date": "Thu, 07 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22435.208672879537,
+            "RSI14": 57.78796492939657,
+            "Sell": false,
+            "close": 22500.85,
+            "date": "Thu, 07 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22437.778921001907,
+            "RSI14": 57.758121621852986,
+            "Sell": false,
+            "close": 22500.75,
+            "date": "Thu, 07 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22439.57190449203,
+            "RSI14": 52.70207519666686,
+            "Sell": false,
+            "close": 22483.5,
+            "date": "Thu, 07 Mar 2024 09:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22441.508300394304,
+            "RSI14": 54.07007432604733,
+            "Sell": false,
+            "close": 22488.95,
+            "date": "Mon, 11 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22442.78444547688,
+            "RSI14": 49.82697943225137,
+            "Sell": false,
+            "close": 22474.05,
+            "date": "Mon, 11 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22443.673290752296,
+            "RSI14": 47.50956504628896,
+            "Sell": false,
+            "close": 22465.45,
+            "date": "Mon, 11 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22443.203749938482,
+            "RSI14": 39.70506543277948,
+            "Sell": true,
+            "close": 22431.7,
+            "date": "Mon, 11 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22443.42909307815,
+            "RSI14": 44.70484750262859,
+            "Sell": false,
+            "close": 22448.95,
+            "date": "Mon, 11 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22443.19265805548,
+            "RSI14": 42.18263584568215,
+            "Sell": true,
+            "close": 22437.4,
+            "date": "Mon, 11 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22443.314514602323,
+            "RSI14": 44.76850425896598,
+            "Sell": false,
+            "close": 22446.3,
+            "date": "Mon, 11 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22442.29237677478,
+            "RSI14": 38.68647983108011,
+            "Sell": true,
+            "close": 22417.25,
+            "date": "Mon, 11 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22441.245616901262,
+            "RSI14": 38.367646856861164,
+            "Sell": true,
+            "close": 22415.6,
+            "date": "Mon, 11 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22440.434024081605,
+            "RSI14": 39.96612366914773,
+            "Sell": false,
+            "close": 22420.55,
+            "date": "Mon, 11 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22439.06798392154,
+            "RSI14": 36.85699832354292,
+            "Sell": true,
+            "close": 22405.6,
+            "date": "Mon, 11 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22436.498651218735,
+            "RSI14": 31.24521115414226,
+            "Sell": true,
+            "close": 22373.55,
+            "date": "Mon, 11 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22434.355566857215,
+            "RSI14": 34.04585612471339,
+            "Sell": false,
+            "close": 22381.85,
+            "date": "Mon, 11 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22433.447505411834,
+            "RSI14": 42.902812724237386,
+            "Sell": false,
+            "close": 22411.2,
+            "date": "Mon, 11 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22432.52995618,
+            "RSI14": 42.66107266814758,
+            "Sell": true,
+            "close": 22410.05,
+            "date": "Mon, 11 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22430.977801035686,
+            "RSI14": 39.13038032794525,
+            "Sell": true,
+            "close": 22392.95,
+            "date": "Mon, 11 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22430.52769119115,
+            "RSI14": 46.529730425192696,
+            "Sell": false,
+            "close": 22419.5,
+            "date": "Mon, 11 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22429.31876212483,
+            "RSI14": 42.391131460526026,
+            "Sell": true,
+            "close": 22399.7,
+            "date": "Mon, 11 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22428.394496943463,
+            "RSI14": 44.02929938945531,
+            "Sell": false,
+            "close": 22405.75,
+            "date": "Mon, 11 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22426.34177157313,
+            "RSI14": 38.275258264068654,
+            "Sell": true,
+            "close": 22376.05,
+            "date": "Mon, 11 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22423.91268249183,
+            "RSI14": 36.27278709093124,
+            "Sell": true,
+            "close": 22364.4,
+            "date": "Mon, 11 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22422.5964988647,
+            "RSI14": 43.3787613366203,
+            "Sell": false,
+            "close": 22390.35,
+            "date": "Mon, 11 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22421.665263615105,
+            "RSI14": 45.52159915124247,
+            "Sell": false,
+            "close": 22398.85,
+            "date": "Mon, 11 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22417.823488571375,
+            "RSI14": 33.46355734595962,
+            "Sell": true,
+            "close": 22323.7,
+            "date": "Mon, 11 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22413.98139098034,
+            "RSI14": 32.98155753918389,
+            "Sell": true,
+            "close": 22319.85,
+            "date": "Mon, 11 Mar 2024 09:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22410.72917956935,
+            "RSI14": 35.87518654147903,
+            "Sell": false,
+            "close": 22331.05,
+            "date": "Tue, 12 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22411.42803527251,
+            "RSI14": 54.352438380908744,
+            "Sell": false,
+            "close": 22428.55,
+            "date": "Tue, 12 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22411.952426046137,
+            "RSI14": 53.71139265061981,
+            "Sell": false,
+            "close": 22424.8,
+            "date": "Tue, 12 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22412.964095612955,
+            "RSI14": 55.65641229184458,
+            "Sell": false,
+            "close": 22437.75,
+            "date": "Tue, 12 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22413.818444804605,
+            "RSI14": 55.079018330488374,
+            "Sell": false,
+            "close": 22434.75,
+            "date": "Tue, 12 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22411.260858733836,
+            "RSI14": 41.70029045115676,
+            "Sell": true,
+            "close": 22348.6,
+            "date": "Tue, 12 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22408.280040744274,
+            "RSI14": 40.07578441969777,
+            "Sell": true,
+            "close": 22335.25,
+            "date": "Tue, 12 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22406.427882283715,
+            "RSI14": 44.5699650561154,
+            "Sell": false,
+            "close": 22361.05,
+            "date": "Tue, 12 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22404.34639670396,
+            "RSI14": 43.52090161382558,
+            "Sell": true,
+            "close": 22353.35,
+            "date": "Tue, 12 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22401.219087029294,
+            "RSI14": 39.75805593848313,
+            "Sell": true,
+            "close": 22324.6,
+            "date": "Tue, 12 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22398.22814243991,
+            "RSI14": 39.826264732796126,
+            "Sell": false,
+            "close": 22324.95,
+            "date": "Tue, 12 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22396.711352540307,
+            "RSI14": 46.2993812160605,
+            "Sell": false,
+            "close": 22359.55,
+            "date": "Tue, 12 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22396.156005381865,
+            "RSI14": 50.13912927980304,
+            "Sell": false,
+            "close": 22382.55,
+            "date": "Tue, 12 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22395.518514974734,
+            "RSI14": 49.698202131654156,
+            "Sell": true,
+            "close": 22379.9,
+            "date": "Tue, 12 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22393.64131830906,
+            "RSI14": 44.56219991213121,
+            "Sell": true,
+            "close": 22347.65,
+            "date": "Tue, 12 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22393.063227394978,
+            "RSI14": 49.95876624124127,
+            "Sell": false,
+            "close": 22378.9,
+            "date": "Tue, 12 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22392.89212043831,
+            "RSI14": 51.551533444053966,
+            "Sell": false,
+            "close": 22388.7,
+            "date": "Tue, 12 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22392.572821597594,
+            "RSI14": 50.849007320642144,
+            "Sell": true,
+            "close": 22384.75,
+            "date": "Tue, 12 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22392.046436436904,
+            "RSI14": 49.81258774243491,
+            "Sell": true,
+            "close": 22379.15,
+            "date": "Tue, 12 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22391.16030167467,
+            "RSI14": 47.98804283222963,
+            "Sell": true,
+            "close": 22369.45,
+            "date": "Tue, 12 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22389.550093765858,
+            "RSI14": 44.487410499062634,
+            "Sell": true,
+            "close": 22350.1,
+            "date": "Tue, 12 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22386.863815578963,
+            "RSI14": 39.79407377870105,
+            "Sell": true,
+            "close": 22321.05,
+            "date": "Tue, 12 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22384.296607124885,
+            "RSI14": 39.87637311790262,
+            "Sell": false,
+            "close": 22321.4,
+            "date": "Tue, 12 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22382.23203429646,
+            "RSI14": 42.361289979801356,
+            "Sell": false,
+            "close": 22331.65,
+            "date": "Tue, 12 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22380.328817265225,
+            "RSI14": 42.86985524603764,
+            "Sell": false,
+            "close": 22333.7,
+            "date": "Tue, 12 Mar 2024 09:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22378.970824431293,
+            "RSI14": 45.88009795574373,
+            "Sell": false,
+            "close": 22345.7,
+            "date": "Wed, 13 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22377.530792100653,
+            "RSI14": 45.143627757670615,
+            "Sell": true,
+            "close": 22342.25,
+            "date": "Wed, 13 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22374.376643390824,
+            "RSI14": 36.81491340965636,
+            "Sell": true,
+            "close": 22297.1,
+            "date": "Wed, 13 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22372.87755933628,
+            "RSI14": 46.08054397196443,
+            "Sell": false,
+            "close": 22336.15,
+            "date": "Wed, 13 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22369.51177269564,
+            "RSI14": 38.44638729295682,
+            "Sell": true,
+            "close": 22287.05,
+            "date": "Wed, 13 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22367.219154158556,
+            "RSI14": 43.38379154054328,
+            "Sell": false,
+            "close": 22311.05,
+            "date": "Wed, 13 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22363.50467752489,
+            "RSI14": 38.097624744004136,
+            "Sell": true,
+            "close": 22272.5,
+            "date": "Wed, 13 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22358.62214115136,
+            "RSI14": 34.19802936767603,
+            "Sell": true,
+            "close": 22239.0,
+            "date": "Wed, 13 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22351.79186110621,
+            "RSI14": 28.993749323889055,
+            "Sell": false,
+            "close": 22184.45,
+            "date": "Wed, 13 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22343.60002341577,
+            "RSI14": 25.776106382881874,
+            "Sell": false,
+            "close": 22142.9,
+            "date": "Wed, 13 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22334.915708772012,
+            "RSI14": 24.324309857054256,
+            "Sell": false,
+            "close": 22122.15,
+            "date": "Wed, 13 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22324.92685744762,
+            "RSI14": 21.667307543932964,
+            "Sell": false,
+            "close": 22080.2,
+            "date": "Wed, 13 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22315.5003140183,
+            "RSI14": 22.611305171565903,
+            "Sell": false,
+            "close": 22084.55,
+            "date": "Wed, 13 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22306.853242880326,
+            "RSI14": 24.95113197388893,
+            "Sell": false,
+            "close": 22095.0,
+            "date": "Wed, 13 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22299.68644904188,
+            "RSI14": 31.19017557618878,
+            "Sell": false,
+            "close": 22124.1,
+            "date": "Wed, 13 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22292.230117706906,
+            "RSI14": 29.853801026184673,
+            "Sell": false,
+            "close": 22109.55,
+            "date": "Wed, 13 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22284.715211130166,
+            "RSI14": 29.0298527764848,
+            "Sell": false,
+            "close": 22100.6,
+            "date": "Wed, 13 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22276.17932049761,
+            "RSI14": 26.11965858221556,
+            "Sell": false,
+            "close": 22067.05,
+            "date": "Wed, 13 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22267.421307929075,
+            "RSI14": 24.978303999811693,
+            "Sell": false,
+            "close": 22052.85,
+            "date": "Wed, 13 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22257.098903696562,
+            "RSI14": 21.51030582936219,
+            "Sell": false,
+            "close": 22004.2,
+            "date": "Wed, 13 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22245.51855453199,
+            "RSI14": 19.030418512552412,
+            "Sell": false,
+            "close": 21961.8,
+            "date": "Wed, 13 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22233.30410141309,
+            "RSI14": 17.60025365126605,
+            "Sell": false,
+            "close": 21934.05,
+            "date": "Wed, 13 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22222.368646455714,
+            "RSI14": 22.22743026589356,
+            "Sell": false,
+            "close": 21954.45,
+            "date": "Wed, 13 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22212.465954437845,
+            "RSI14": 25.62293600706281,
+            "Sell": false,
+            "close": 21969.85,
+            "date": "Wed, 13 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22203.390818969692,
+            "RSI14": 28.08215207849231,
+            "Sell": false,
+            "close": 21981.05,
+            "date": "Wed, 13 Mar 2024 09:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22195.138237833627,
+            "RSI14": 30.703836833640402,
+            "Sell": false,
+            "close": 21992.95,
+            "date": "Thu, 14 Mar 2024 03:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22187.207326546035,
+            "RSI14": 30.698773080440894,
+            "Sell": true,
+            "close": 21992.9,
+            "date": "Thu, 14 Mar 2024 04:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22180.644294132464,
+            "RSI14": 36.75343977254376,
+            "Sell": false,
+            "close": 22019.85,
+            "date": "Thu, 14 Mar 2024 04:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22173.981772793937,
+            "RSI14": 35.62173867696396,
+            "Sell": true,
+            "close": 22010.75,
+            "date": "Thu, 14 Mar 2024 04:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22168.253075821627,
+            "RSI14": 39.40837634601288,
+            "Sell": false,
+            "close": 22027.9,
+            "date": "Thu, 14 Mar 2024 04:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22164.44119049529,
+            "RSI14": 47.737611452015244,
+            "Sell": false,
+            "close": 22071.05,
+            "date": "Thu, 14 Mar 2024 05:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22161.34545753469,
+            "RSI14": 50.20615029405171,
+            "Sell": false,
+            "close": 22085.5,
+            "date": "Thu, 14 Mar 2024 05:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22158.292694494114,
+            "RSI14": 49.85514992804223,
+            "Sell": true,
+            "close": 22083.5,
+            "date": "Thu, 14 Mar 2024 05:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22155.27141235709,
+            "RSI14": 49.43641917389385,
+            "Sell": true,
+            "close": 22081.25,
+            "date": "Thu, 14 Mar 2024 05:45:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22155.69998442152,
+            "RSI14": 62.30816957560008,
+            "Sell": false,
+            "close": 22166.2,
+            "date": "Thu, 14 Mar 2024 06:00:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22156.401945816757,
+            "RSI14": 63.187294402469426,
+            "Sell": false,
+            "close": 22173.6,
+            "date": "Thu, 14 Mar 2024 06:15:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22157.154810686687,
+            "RSI14": 63.435519496069624,
+            "Sell": false,
+            "close": 22175.6,
+            "date": "Thu, 14 Mar 2024 06:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22158.882073012697,
+            "RSI14": 66.54510347091708,
+            "Sell": false,
+            "close": 22201.2,
+            "date": "Thu, 14 Mar 2024 06:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22158.26316818867,
+            "RSI14": 55.093548153386294,
+            "Sell": true,
+            "close": 22143.1,
+            "date": "Thu, 14 Mar 2024 07:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22158.24304394598,
+            "RSI14": 57.09833715827214,
+            "Sell": false,
+            "close": 22157.75,
+            "date": "Thu, 14 Mar 2024 07:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22158.209983399076,
+            "RSI14": 57.03282831330604,
+            "Sell": true,
+            "close": 22157.4,
+            "date": "Thu, 14 Mar 2024 07:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22158.497827187348,
+            "RSI14": 58.234453163499055,
+            "Sell": false,
+            "close": 22165.55,
+            "date": "Thu, 14 Mar 2024 07:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22156.82536337608,
+            "RSI14": 49.198614464038286,
+            "Sell": true,
+            "close": 22115.85,
+            "date": "Thu, 14 Mar 2024 08:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22154.838094224076,
+            "RSI14": 47.644783212179156,
+            "Sell": true,
+            "close": 22106.15,
+            "date": "Thu, 14 Mar 2024 08:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22152.766012097643,
+            "RSI14": 46.96141744012703,
+            "Sell": true,
+            "close": 22102.0,
+            "date": "Thu, 14 Mar 2024 08:30:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22151.818325348715,
+            "RSI14": 51.73944251751558,
+            "Sell": false,
+            "close": 22128.6,
+            "date": "Thu, 14 Mar 2024 08:45:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22150.25486160955,
+            "RSI14": 48.777392545713994,
+            "Sell": true,
+            "close": 22111.95,
+            "date": "Thu, 14 Mar 2024 09:00:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22149.33702389937,
+            "RSI14": 51.45573017592342,
+            "Sell": false,
+            "close": 22126.85,
+            "date": "Thu, 14 Mar 2024 09:15:00 GMT"
+        },
+        {
+            "Buy": false,
+            "EMA50": 22149.13753276606,
+            "RSI14": 54.450962464802046,
+            "Sell": false,
+            "close": 22144.25,
+            "date": "Thu, 14 Mar 2024 09:30:00 GMT"
+        },
+        {
+            "Buy": true,
+            "EMA50": 22149.290962853665,
+            "RSI14": 55.93189415584966,
+            "Sell": false,
+            "close": 22153.05,
+            "date": "Thu, 14 Mar 2024 09:45:00 GMT"
+        }
+    ],
+    "profit_loss": -411.5000000000073
+}

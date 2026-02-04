@@ -1,0 +1,632 @@
+// TradeAnalysis.jsx - 360° Analytics Overview as a standalone page
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Box,
+  Typography,
+  Container,
+  CircularProgress,
+  Grid,
+  Card,
+  CardContent,
+  Chip,
+  Stack,
+  TextField,
+  MenuItem,
+  Button,
+  useTheme,
+  useMediaQuery,
+  Alert,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableContainer,
+  Paper,
+  LinearProgress
+} from '@mui/material';
+import {
+  BarChart as BarChartIcon,
+  ShowChart as ShowChartIcon,
+  TrendingUp as TrendingUpIcon
+} from '@mui/icons-material';
+import CustomAppBar from './CustomAppBar';
+import { httpApi } from './api';
+import moment from 'moment';
+
+// Import the computeAnalytics function and chart components
+// We'll need to extract these from fusion.jsx or recreate them here
+// For now, I'll include the essential analytics computation
+
+const computeAnalytics = (rows, groups = []) => {
+  // Overall metrics
+  const closed = rows.filter(r => !r.in_progress);
+  const totalTrades = closed.length;
+  const wins = closed.filter(r => (r.total_matched_pnl || 0) > 0).length;
+  const losses = closed.filter(r => (r.total_matched_pnl || 0) < 0).length;
+  const flat = closed.filter(r => (r.total_matched_pnl || 0) === 0).length;
+  const winRate = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
+  
+  const totalPnL = closed.reduce((sum, r) => sum + (r.total_matched_pnl || 0), 0);
+  const totalBuyCost = closed.reduce((sum, r) => sum + (r.buy_cost_total || 0), 0);
+  const totalSellValue = closed.reduce((sum, r) => sum + (r.sell_value_total || 0), 0);
+  const portfolioPnLPct = totalBuyCost > 0 ? ((totalSellValue - totalBuyCost) / totalBuyCost) * 100 : 0;
+
+  // Profit/Loss breakdown
+  const profitTrades = closed.filter(r => (r.total_matched_pnl || 0) > 0);
+  const lossTrades = closed.filter(r => (r.total_matched_pnl || 0) < 0);
+  
+  const totalProfit = profitTrades.reduce((sum, r) => sum + (r.total_matched_pnl || 0), 0);
+  const totalLoss = Math.abs(lossTrades.reduce((sum, r) => sum + (r.total_matched_pnl || 0), 0));
+  const profitFactor = totalLoss > 0 ? totalProfit / totalLoss : totalProfit > 0 ? Infinity : 0;
+  
+  const avgProfit = wins > 0 ? totalProfit / wins : 0;
+  const avgLoss = losses > 0 ? totalLoss / losses : 0;
+  const avgPnL = totalTrades > 0 ? totalPnL / totalTrades : 0;
+  
+  // Tag-based analysis
+  const tagStats = {};
+  closed.forEach(r => {
+    const tag = r.tag || 'UNTAGGED';
+    if (!tagStats[tag]) {
+      tagStats[tag] = { count: 0, pnl: 0, wins: 0, losses: 0, trades: [] };
+    }
+    tagStats[tag].count++;
+    tagStats[tag].pnl += (r.total_matched_pnl || 0);
+    tagStats[tag].trades.push(r);
+    if ((r.total_matched_pnl || 0) > 0) tagStats[tag].wins++;
+    if ((r.total_matched_pnl || 0) < 0) tagStats[tag].losses++;
+  });
+  
+  const tagAnalysis = Object.entries(tagStats)
+    .map(([tag, stats]) => ({
+      tag,
+      count: stats.count,
+      pnl: stats.pnl,
+      wins: stats.wins,
+      losses: stats.losses,
+      winRate: stats.count > 0 ? (stats.wins / stats.count) * 100 : 0,
+      avgPnL: stats.count > 0 ? stats.pnl / stats.count : 0
+    }))
+    .sort((a, b) => b.pnl - a.pnl);
+  
+  // Signal type analysis
+  const signalStats = {};
+  closed.forEach(r => {
+    const signal = r.signal_type || 'UNKNOWN';
+    if (!signalStats[signal]) {
+      signalStats[signal] = { count: 0, pnl: 0, wins: 0, losses: 0 };
+    }
+    signalStats[signal].count++;
+    signalStats[signal].pnl += (r.total_matched_pnl || 0);
+    if ((r.total_matched_pnl || 0) > 0) signalStats[signal].wins++;
+    if ((r.total_matched_pnl || 0) < 0) signalStats[signal].losses++;
+  });
+  
+  const signalAnalysis = Object.entries(signalStats)
+    .map(([signal, stats]) => ({
+      signal,
+      count: stats.count,
+      pnl: stats.pnl,
+      wins: stats.wins,
+      losses: stats.losses,
+      winRate: stats.count > 0 ? (stats.wins / stats.count) * 100 : 0
+    }))
+    .sort((a, b) => b.pnl - a.pnl);
+  
+  // Outcome distribution
+  const outcomeStats = {
+    PROFIT: profitTrades.length,
+    LOSS: lossTrades.length,
+    FLAT: flat,
+    'IN-PROGRESS': rows.filter(r => r.in_progress).length
+  };
+  
+  return {
+    totalTrades,
+    wins,
+    losses,
+    flat,
+    winRate,
+    totalPnL,
+    totalBuyCost,
+    totalSellValue,
+    portfolioPnLPct,
+    profitFactor,
+    avgProfit,
+    avgLoss,
+    avgPnL,
+    totalProfit,
+    totalLoss,
+    tagAnalysis,
+    signalAnalysis,
+    outcomeStats
+  };
+};
+
+function TradeAnalysis() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [allGroups, setAllGroups] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [dateFilter, setDateFilter] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  // Fetch data
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await httpApi.get('/fusion-data/grouped', { 
+        params: { order: 'desc', limit_parents: 500 } 
+      });
+      
+      // Handle different response structures
+      const payload = response.data;
+      const groups = Array.isArray(payload) ? payload : (Array.isArray(payload?.records) ? payload.records : []);
+      
+      setAllGroups(groups);
+      
+      // Transform groups to rows - extract data from nested structure
+      const transformedRows = groups.map(g => {
+        const buyTrades = (g.trades || []).filter(t => String(t.transaction_type).toUpperCase() === 'BUY');
+        const sellTrades = (g.trades || []).filter(t => String(t.transaction_type).toUpperCase() === 'SELL');
+        
+        const buyQty = buyTrades.reduce((sum, t) => sum + (t.filled_quantity || 0), 0);
+        const buyPrice = buyQty > 0 ? buyTrades.reduce((sum, t) => sum + ((t.average_price || 0) * (t.filled_quantity || 0)), 0) / buyQty : 0;
+        
+        const sellQty = sellTrades.reduce((sum, t) => sum + (t.filled_quantity || 0), 0);
+        const sellPrice = sellQty > 0 ? sellTrades.reduce((sum, t) => sum + ((t.average_price || 0) * (t.filled_quantity || 0)), 0) / sellQty : 0;
+        
+        const buyCost = buyTrades.reduce((sum, t) => sum + (Number.isFinite(+t.buy_cost) ? +t.buy_cost : (t.average_price || 0) * (t.filled_quantity || 0)), 0);
+        const sellValue = sellTrades.reduce((sum, t) => sum + (Number.isFinite(+t.sell_cost) ? +t.sell_cost : (t.average_price || 0) * (t.filled_quantity || 0)), 0);
+        
+        const totalPnL = (g.trades || []).reduce((sum, t) => sum + (t.matched_pnl || 0), 0);
+        const inProgress = (g.trades || []).some(t => t.position_status === true);
+        
+        return {
+          parent_order_id: g.parent_order_id,
+          tradingsymbol: g.display_tradingsymbol || g.tradingsymbol || 'N/A',
+          signal_type: g.fusion?.[0]?.signal_type || 'UNKNOWN',
+          tag: (g.trades || []).find(t => t.tag)?.tag || 'UNTAGGED',
+          in_progress: inProgress,
+          total_matched_pnl: totalPnL,
+          buy_cost_total: buyCost,
+          sell_value_total: sellValue,
+          buy_qty: buyQty,
+          buy_price: buyPrice,
+          sell_price: sellPrice,
+          event_ts: g.fusion?.[0]?.event_ts || g.trades?.[0]?.order_timestamp || new Date().toISOString()
+        };
+      });
+      
+      setRows(transformedRows);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError('Failed to load trade data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter rows based on date
+  const getFilteredRows = () => {
+    if (dateFilter === 'all') return rows;
+    
+    const now = moment().utcOffset(330); // IST
+    let filtered = rows;
+    
+    if (dateFilter === 'today') {
+      filtered = rows.filter(r => {
+        const ts = moment(r.event_ts).utcOffset(330);
+        return ts.isSame(now, 'day');
+      });
+    } else if (dateFilter === 'yesterday') {
+      const yesterday = now.clone().subtract(1, 'days');
+      filtered = rows.filter(r => {
+        const ts = moment(r.event_ts).utcOffset(330);
+        return ts.isSame(yesterday, 'day');
+      });
+    } else if (dateFilter === 'last7days') {
+      const last7Days = now.clone().subtract(7, 'days');
+      filtered = rows.filter(r => {
+        const ts = moment(r.event_ts).utcOffset(330);
+        return ts.isAfter(last7Days);
+      });
+    } else if (dateFilter === 'last30days') {
+      const last30Days = now.clone().subtract(30, 'days');
+      filtered = rows.filter(r => {
+        const ts = moment(r.event_ts).utcOffset(330);
+        return ts.isAfter(last30Days);
+      });
+    } else if (dateFilter === 'custom' && startDate && endDate) {
+      const start = moment(startDate).startOf('day');
+      const end = moment(endDate).endOf('day');
+      filtered = rows.filter(r => {
+        const ts = moment(r.event_ts);
+        return ts.isBetween(start, end, null, '[]');
+      });
+    }
+    
+    return filtered;
+  };
+
+  const filteredRows = getFilteredRows();
+  const analytics = computeAnalytics(filteredRows, allGroups);
+
+  const fmtNum = (n, d = 2) => {
+    if (n == null || !isFinite(n)) return '—';
+    return Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+  };
+
+  const getDateFilterLabel = () => {
+    if (dateFilter === 'all') return 'All Time';
+    if (dateFilter === 'today') return 'Today';
+    if (dateFilter === 'yesterday') return 'Yesterday';
+    if (dateFilter === 'last7days') return 'Last 7 Days';
+    if (dateFilter === 'last30days') return 'Last 30 Days';
+    if (dateFilter === 'custom' && startDate && endDate) {
+      return `${moment(startDate).format('MMM D, YYYY')} - ${moment(endDate).format('MMM D, YYYY')}`;
+    }
+    return 'Select Period';
+  };
+
+  if (loading) {
+    return (
+      <>
+        <CustomAppBar />
+        <Container maxWidth="xl" sx={{ mt: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <CircularProgress />
+        </Container>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <CustomAppBar />
+        <Container maxWidth="xl" sx={{ mt: 4 }}>
+          <Alert severity="error">{error}</Alert>
+          <Button onClick={fetchData} sx={{ mt: 2 }}>Retry</Button>
+        </Container>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <CustomAppBar />
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4, px: { xs: 1, sm: 2, md: 3 } }}>
+        {/* Header */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ color: '#00ffaa', fontWeight: 700, mb: 2 }}>
+            360° Trade Analytics
+          </Typography>
+          
+          {/* Date Filter Section */}
+          <Card sx={{ background: 'rgba(7,11,10,0.95)', border: '1px solid rgba(255,255,255,0.1)', mb: 3 }}>
+            <CardContent>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} sm={6} md={3}>
+                  <TextField
+                    select
+                    fullWidth
+                    size="small"
+                    label="Date Range"
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    sx={{
+                      '& .MuiOutlinedInput-root': { color: '#fff', borderColor: '#00ffaa' },
+                      '& .MuiInputLabel-root': { color: '#00ffaa' }
+                    }}
+                  >
+                    <MenuItem value="all">All Time</MenuItem>
+                    <MenuItem value="today">Today</MenuItem>
+                    <MenuItem value="yesterday">Yesterday</MenuItem>
+                    <MenuItem value="last7days">Last 7 Days</MenuItem>
+                    <MenuItem value="last30days">Last 30 Days</MenuItem>
+                    <MenuItem value="custom">Custom Range</MenuItem>
+                  </TextField>
+                </Grid>
+                
+                {dateFilter === 'custom' && (
+                  <>
+                    <Grid item xs={12} sm={6} md={3}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        type="date"
+                        label="Start Date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{
+                          '& .MuiOutlinedInput-root': { color: '#fff' },
+                          '& .MuiInputLabel-root': { color: '#00ffaa' }
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        type="date"
+                        label="End Date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{
+                          '& .MuiOutlinedInput-root': { color: '#fff' },
+                          '& .MuiInputLabel-root': { color: '#00ffaa' }
+                        }}
+                      />
+                    </Grid>
+                  </>
+                )}
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <Chip 
+                    label={`${analytics.totalTrades} trades analyzed`}
+                    sx={{ bgcolor: '#00ffaa20', color: '#00ffaa', fontWeight: 600 }}
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {/* Period Indicator */}
+          <Box sx={{ 
+            mb: 3, 
+            p: 2, 
+            background: 'linear-gradient(135deg, rgba(0, 255, 170, 0.1) 0%, rgba(0, 200, 150, 0.05) 100%)',
+            border: '1px solid #00ffaa40',
+            borderRadius: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1,
+            flexWrap: 'wrap'
+          }}>
+            <Typography variant="body2" sx={{ color: '#00ffaa', fontWeight: 600 }}>
+              📊 Analytics Period:
+            </Typography>
+            <Chip 
+              label={getDateFilterLabel()} 
+              size="small"
+              sx={{ 
+                bgcolor: '#00ffaa20', 
+                color: '#00ffaa', 
+                border: '1px solid #00ffaa60',
+                fontWeight: 700
+              }}
+            />
+          </Box>
+
+          {/* Trading Philosophy Header */}
+          <Box sx={{ 
+            background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 193, 7, 0.08) 50%, rgba(255, 152, 0, 0.05) 100%)',
+            border: '3px solid transparent',
+            borderImage: 'linear-gradient(135deg, #FFD700, #FFC107, #FF9800) 1',
+            borderRadius: 3,
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            textAlign: 'center'
+          }}>
+            <Typography variant="h4" sx={{ 
+              color: '#FFD700', 
+              fontWeight: 800, 
+              mb: 2,
+              fontSize: { xs: '1.5rem', md: '2rem' }
+            }}>
+              🎯 Asymmetric Profitability Philosophy
+            </Typography>
+            <Typography variant="h6" sx={{ 
+              color: '#FFC107', 
+              fontWeight: 600, 
+              mb: 2,
+              fontSize: { xs: '1rem', md: '1.2rem' }
+            }}>
+              Professional Trading Mindset
+            </Typography>
+            <Typography variant="body1" sx={{ 
+              color: '#E8E8E8', 
+              fontSize: { xs: '0.95rem', md: '1.1rem' },
+              lineHeight: 1.8,
+              maxWidth: '900px',
+              mx: 'auto'
+            }}>
+              Success in trading is <strong style={{color: '#FFD700'}}>NOT</strong> about winning every trade. 
+              It's about mastering the art of <strong style={{color: '#00FFAA'}}>asymmetric returns</strong> — 
+              where average wins significantly outweigh average losses, and discipline ensures 
+              <strong style={{color: '#FFC107'}}> sustainable profitability over time</strong>.
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Key Metrics Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          {/* Total PnL */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: analytics.totalPnL >= 0 
+                ? 'linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(7,11,10,0.95) 100%)'
+                : 'linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(7,11,10,0.95) 100%)',
+              border: `2px solid ${analytics.totalPnL >= 0 ? '#4caf50' : '#f44336'}`,
+              height: '100%'
+            }}>
+              <CardContent>
+                <Typography variant="subtitle2" sx={{ color: '#bdbdbd', mb: 1 }}>
+                  Total P&L
+                </Typography>
+                <Typography variant="h4" sx={{ 
+                  color: analytics.totalPnL >= 0 ? '#4caf50' : '#f44336',
+                  fontWeight: 800,
+                  fontFamily: 'monospace'
+                }}>
+                  {analytics.totalPnL >= 0 ? '+' : ''}₹{fmtNum(analytics.totalPnL)}
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#999' }}>
+                  {analytics.totalPnL >= 0 ? '+' : ''}{fmtNum(analytics.portfolioPnLPct)}%
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Win Rate */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ background: 'rgba(7,11,10,0.95)', border: '1px solid rgba(0,255,170,0.3)', height: '100%' }}>
+              <CardContent>
+                <Typography variant="subtitle2" sx={{ color: '#bdbdbd', mb: 1 }}>
+                  Win Rate
+                </Typography>
+                <Typography variant="h4" sx={{ color: '#00ffaa', fontWeight: 800 }}>
+                  {fmtNum(analytics.winRate, 1)}%
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#999' }}>
+                  {analytics.wins}W / {analytics.losses}L / {analytics.flat}F
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Profit Factor */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ background: 'rgba(7,11,10,0.95)', border: '1px solid rgba(255,193,7,0.3)', height: '100%' }}>
+              <CardContent>
+                <Typography variant="subtitle2" sx={{ color: '#bdbdbd', mb: 1 }}>
+                  Profit Factor
+                </Typography>
+                <Typography variant="h4" sx={{ color: '#FFC107', fontWeight: 800 }}>
+                  {analytics.profitFactor === Infinity ? '∞' : fmtNum(analytics.profitFactor)}
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#999' }}>
+                  ₹{fmtNum(analytics.totalProfit)} / ₹{fmtNum(analytics.totalLoss)}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Total Trades */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ background: 'rgba(7,11,10,0.95)', border: '1px solid rgba(33,150,243,0.3)', height: '100%' }}>
+              <CardContent>
+                <Typography variant="subtitle2" sx={{ color: '#bdbdbd', mb: 1 }}>
+                  Total Trades
+                </Typography>
+                <Typography variant="h4" sx={{ color: '#2196f3', fontWeight: 800 }}>
+                  {analytics.totalTrades}
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#999' }}>
+                  Avg: ₹{fmtNum(analytics.avgPnL)}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        {/* Tag Analysis */}
+        <Card sx={{ background: 'rgba(7,11,10,0.95)', border: '1px solid rgba(255,255,255,0.1)', mb: 4 }}>
+          <CardContent>
+            <Typography variant="h6" sx={{ color: '#00ffaa', mb: 3, fontWeight: 700 }}>
+              📊 Exit Tag Analysis
+            </Typography>
+            <Grid container spacing={2}>
+              {analytics.tagAnalysis.map((tag, idx) => (
+                <Grid item xs={12} sm={6} md={4} key={idx}>
+                  <Box sx={{ 
+                    p: 2, 
+                    background: 'rgba(0,0,0,0.5)', 
+                    borderRadius: 2,
+                    border: `1px solid ${tag.pnl >= 0 ? '#4caf50' : '#f44336'}40`
+                  }}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                      <Chip 
+                        label={tag.tag}
+                        size="small"
+                        sx={{ 
+                          bgcolor: tag.pnl >= 0 ? '#4caf5020' : '#f4433620',
+                          color: tag.pnl >= 0 ? '#4caf50' : '#f44336',
+                          fontWeight: 600
+                        }}
+                      />
+                      <Typography variant="body2" sx={{ color: '#fff', fontWeight: 600 }}>
+                        {tag.count} trades
+                      </Typography>
+                    </Stack>
+                    <Typography variant="h6" sx={{ 
+                      color: tag.pnl >= 0 ? '#4caf50' : '#f44336',
+                      fontWeight: 700,
+                      mb: 0.5
+                    }}>
+                      {tag.pnl >= 0 ? '+' : ''}₹{fmtNum(tag.pnl)}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#999' }}>
+                      Win Rate: {fmtNum(tag.winRate, 1)}% • Avg: ₹{fmtNum(tag.avgPnL)}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </CardContent>
+        </Card>
+
+        {/* Signal Type Analysis */}
+        <Card sx={{ background: 'rgba(7,11,10,0.95)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <CardContent>
+            <Typography variant="h6" sx={{ color: '#00ffaa', mb: 3, fontWeight: 700 }}>
+              📈 Signal Type Performance
+            </Typography>
+            <Grid container spacing={2}>
+              {analytics.signalAnalysis.map((signal, idx) => (
+                <Grid item xs={12} sm={6} key={idx}>
+                  <Box sx={{ 
+                    p: 2, 
+                    background: 'rgba(0,0,0,0.5)', 
+                    borderRadius: 2,
+                    border: `1px solid ${signal.pnl >= 0 ? '#4caf50' : '#f44336'}40`
+                  }}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                      <Chip 
+                        label={signal.signal}
+                        size="small"
+                        sx={{ 
+                          bgcolor: signal.signal === 'BUY' ? '#00c85320' : '#ff174420',
+                          color: signal.signal === 'BUY' ? '#00c853' : '#ff1744',
+                          fontWeight: 600
+                        }}
+                      />
+                      <Typography variant="body2" sx={{ color: '#fff', fontWeight: 600 }}>
+                        {signal.count} trades
+                      </Typography>
+                    </Stack>
+                    <Typography variant="h6" sx={{ 
+                      color: signal.pnl >= 0 ? '#4caf50' : '#f44336',
+                      fontWeight: 700,
+                      mb: 0.5
+                    }}>
+                      {signal.pnl >= 0 ? '+' : ''}₹{fmtNum(signal.pnl)}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#999' }}>
+                      Win Rate: {fmtNum(signal.winRate, 1)}% • {signal.wins}W / {signal.losses}L
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </CardContent>
+        </Card>
+      </Container>
+    </>
+  );
+}
+
+export default TradeAnalysis;

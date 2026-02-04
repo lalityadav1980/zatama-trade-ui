@@ -1,0 +1,19 @@
+{
+  "Parameters": {
+    "Header": {
+      "schemaName": "CustomerProfile",
+      "schemaVersion": "1.0",
+      "description": "Schema for Customer Profile Information",
+      "businessKey": "$.customer.id",
+      "secondaryKeys": ["$.customer.email"],
+      "createdAtSource": "$.metadata.createdAt"
+    }
+  },
+  "customer": {
+    "id": "cust123",
+    "email": "customer@example.com"
+  },
+  "metadata": {
+    "createdAt": "2024-02-18T12:34:56Z"
+  }
+}

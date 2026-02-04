@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "Parameters": {
+      "type": "object",
+      "properties": {
+        "Header": {
+          "type": "object",
+          "properties": {
+            "schemaName": {
+              "type": "string",
+              "default": "CustomerProfile"
+            },
+            "schemaVersion": {
+              "type": "string",
+              "default": "1.0"
+            },
+            "description": {
+              "type": "string",
+              "default": "Schema for Customer Profile Information"
+            },
+            "businessKey": {
+              "type": "string",
+              "default": "$.customer.id"
+            },
+            "secondaryKeys": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": ["$.customer.email"]
+            },
+            "createdAtSource": {
+              "type": "string",
+              "default": "$.metadata.createdAt"
+            }
+          },
+          "required": ["schemaName", "schemaVersion", "description", "businessKey", "createdAtSource"]
+        }
+      },
+      "required": ["Header"]
+    },
+    "customer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "email"]
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["createdAt"]
+    }
+  },
+  "required": ["Parameters", "customer", "metadata"]
+}
