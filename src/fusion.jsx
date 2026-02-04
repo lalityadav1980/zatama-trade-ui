@@ -1862,7 +1862,7 @@ const Fusion = () => {
   const [orderDirection, setOrderDirection] = useState('desc');
   const [dense, setDense] = useState(true);
   const [colMenuEl, setColMenuEl] = useState(null);
-  const [analyticsOpen, setAnalyticsOpen] = useState(false); // Analytics dialog state
+  const [analyticsOpen, setAnalyticsOpen] = useState(true); // Analytics dialog state - open by default
   
   // CSV Export dialog state
   const [csvExportOpen, setCsvExportOpen] = useState(false);
@@ -4100,19 +4100,30 @@ const Fusion = () => {
                             .sort((a, b) => new Date(a.event_ts) - new Date(b.event_ts));
                           
                           let cumulativePnL = 0;
-                          const cumulativeData = sortedTrades.map((trade, index) => {
-                            cumulativePnL += (trade.total_matched_pnl || 0);
-                            const fullDateTime = formatToIST(trade.event_ts);
-                            const [dateOnly, timeOnly] = fullDateTime.split(' ');
-                            return {
-                              trade: index + 1,
-                              cumPnL: cumulativePnL,
-                              tradePnL: trade.total_matched_pnl || 0,
-                              symbol: trade.tradingsymbol || '',
-                              date: dateOnly, // Just date
-                              time: timeOnly // Just time
-                            };
-                          });
+                          // Start with initial point at 0
+                          const cumulativeData = [
+                            {
+                              trade: 0,
+                              cumPnL: 0,
+                              tradePnL: 0,
+                              symbol: 'Start',
+                              date: sortedTrades.length > 0 ? formatToIST(sortedTrades[0].event_ts).split(' ')[0] : '',
+                              time: '00:00:00'
+                            },
+                            ...sortedTrades.map((trade, index) => {
+                              cumulativePnL += (trade.total_matched_pnl || 0);
+                              const fullDateTime = formatToIST(trade.event_ts);
+                              const [dateOnly, timeOnly] = fullDateTime.split(' ');
+                              return {
+                                trade: index + 1,
+                                cumPnL: cumulativePnL,
+                                tradePnL: trade.total_matched_pnl || 0,
+                                symbol: trade.tradingsymbol || '',
+                                date: dateOnly, // Just date
+                                time: timeOnly // Just time
+                              };
+                            })
+                          ];
 
                           return (
                             <LineChart
