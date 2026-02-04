@@ -1,8 +1,8 @@
 module.exports = {
   apps: [{
     name: 'zatama-trade-ui',
-    script: 'npx',
-    args: 'serve -s build -l 3000',
+    script: './node_modules/.bin/serve',
+    args: '-s build -l 3000',
     cwd: '/home/ubuntu/zatama-trade-ui',
     instances: 1,
     autorestart: true,
