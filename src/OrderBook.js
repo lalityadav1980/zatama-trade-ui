@@ -354,7 +354,7 @@ const OrderBook = () => {
 
       const response = await httpApi.get(url, {
         params,
-        headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        headers: { 'Cache-Control': 'no-cache' }
       });
 
       let data = response.data;
