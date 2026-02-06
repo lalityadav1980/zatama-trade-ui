@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Container,
   Card,
@@ -493,6 +493,8 @@ const TrailStatusGauge = ({ current, max, min, title, size = 120 }) => {
 // =====================
 const ALL_LOOKBACK_DAYS = 30;
 
+const DEBUG_TRAIL_SEARCH = false;
+
 const TrailData = () => {
   const [groupedData, setGroupedData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -521,6 +523,14 @@ const TrailData = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const pollInFlightRef = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   // ------------- Data fetchers -------------
   const normalizeIncoming = (items = [], asLive = false) =>
@@ -615,8 +625,10 @@ const TrailData = () => {
     }
   };
 
-  const fetchCurrentDateData = async () => {
+  const fetchCurrentDateData = useCallback(async () => {
+    if (pollInFlightRef.current) return;
     try {
+      pollInFlightRef.current = true;
       setRefreshing(true);
       const today = moment().format('YYYY-MM-DD');
       const res = await httpApi.get(`/trail-data/summary?date=${today}`);
@@ -625,13 +637,15 @@ const TrailData = () => {
       const historical = normalizeIncoming(res.data.historical || [], false);
       const combined = [...live, ...historical].sort(byLiveThenTimeDesc);
 
+      if (!mountedRef.current) return;
       setGroupedData((prev) => ({ ...prev, [today]: combined }));
     } catch (err) {
       console.error('Error fetching current date data:', err);
     } finally {
-      setRefreshing(false);
+      if (mountedRef.current) setRefreshing(false);
+      pollInFlightRef.current = false;
     }
-  };
+  }, []);
 
   // ------------- Group & filter helpers (by parent) -------------
   const buildGroupsByParent = (records) => {
@@ -651,17 +665,19 @@ const TrailData = () => {
     }
 
     const q = query.trim().toLowerCase();
-    console.log(`=== SEARCH DEBUG ===`);
-    console.log(`Query: "${q}"`);
-    console.log(`Current grouped data keys:`, Object.keys(groupedData));
-    console.log(`Total records in grouped data:`, Object.values(groupedData).flat().length);
+    if (DEBUG_TRAIL_SEARCH) {
+      console.log(`=== SEARCH DEBUG ===`);
+      console.log(`Query: "${q}"`);
+      console.log(`Current grouped data keys:`, Object.keys(groupedData));
+      console.log(`Total records in grouped data:`, Object.values(groupedData).flat().length);
+    }
     
     // First, search in current page data
     let foundRecords = [];
     Object.entries(groupedData).forEach(([date, dateRecords]) => {
       dateRecords.forEach(record => {
         // Debug: Log the actual structure of a few records
-        if (foundRecords.length === 0) {
+        if (DEBUG_TRAIL_SEARCH && foundRecords.length === 0) {
           console.log(`Sample record structure:`, {
             parent_order_id: record.parent_order_id,
             tradingsymbol: record.tradingsymbol,
@@ -676,7 +692,11 @@ const TrailData = () => {
         // Also check if it's in a nested structure
         const nestedParentId = String(record.parent?.order_id || record.parentOrderId || '').toLowerCase();
         
-        console.log(`Checking record - Parent ID: "${record.parent_order_id}", Symbol: "${record.tradingsymbol}"`);
+        if (DEBUG_TRAIL_SEARCH) {
+          console.log(
+            `Checking record - Parent ID: "${record.parent_order_id}", Symbol: "${record.tradingsymbol}"`
+          );
+        }
         
         if (parentOrderId.includes(q) || parentKey.includes(q) || symbol.includes(q) || nestedParentId.includes(q)) {
           foundRecords.push({
@@ -693,21 +713,28 @@ const TrailData = () => {
       });
     });
     
-    console.log(`Found ${foundRecords.length} matching records in current data:`);
-    foundRecords.forEach(found => {
-      console.log(`- Parent ID: ${found.record.parent_order_id}, Symbol: ${found.record.tradingsymbol}, Matched by:`, found.matchedBy);
-    });
+    if (DEBUG_TRAIL_SEARCH) {
+      console.log(`Found ${foundRecords.length} matching records in current data:`);
+      foundRecords.forEach(found => {
+        console.log(
+          `- Parent ID: ${found.record.parent_order_id}, Symbol: ${found.record.tradingsymbol}, Matched by:`,
+          found.matchedBy
+        );
+      });
+    }
     
     const hasMatchInCurrentData = foundRecords.length > 0;
 
     // If found in current data or already searched all data, no need to fetch
     if (hasMatchInCurrentData || searchedAllData) {
-      console.log(hasMatchInCurrentData ? 'Match found in current data' : 'Using previously fetched all data');
+      if (DEBUG_TRAIL_SEARCH) {
+        console.log(hasMatchInCurrentData ? 'Match found in current data' : 'Using previously fetched all data');
+      }
       return;
     }
 
     // If not found and haven't searched all data yet, fetch all data
-    console.log('Parent order not found in current data, fetching all data...');
+    if (DEBUG_TRAIL_SEARCH) console.log('Parent order not found in current data, fetching all data...');
     try {
       setRefreshing(true);
       
@@ -718,30 +745,42 @@ const TrailData = () => {
         }
       });
       
-      if (allData.data) {
-        console.log(`Fetched ${allData.data.length} records from API`);
-        
-        // Process the fetched data same way as current data processing
-        const processedData = {};
-        
-        allData.data.forEach((rawRecord) => {
-          const record = {
-            ...rawRecord,
-            parent_order_id: rawRecord.parent_order_id || parentKeyOf(rawRecord)
-          };
-          
-          const dateKey = moment(record.date).format('YYYY-MM-DD');
-          if (!processedData[dateKey]) processedData[dateKey] = [];
-          processedData[dateKey].push(record);
+      const payload = allData?.data;
+      const rows = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.data)
+          ? payload.data
+          : Array.isArray(payload?.rows)
+            ? payload.rows
+            : [];
+
+      if (rows.length) {
+        if (DEBUG_TRAIL_SEARCH) console.log(`Fetched ${rows.length} records from API`);
+
+        // Normalize + group + sort to match the rest of the UI expectations
+        const normalized = normalizeIncoming(rows, false);
+        const processedData = normalized.reduce((acc, item) => {
+          const dateKey = moment(item.date).format('YYYY-MM-DD');
+          if (!acc[dateKey]) acc[dateKey] = [];
+          acc[dateKey].push(item);
+          return acc;
+        }, {});
+
+        Object.keys(processedData).forEach((d) => processedData[d].sort(byLiveThenTimeDesc));
+
+        // Merge fetched history without blowing away today's live+historical summary in current mode
+        setGroupedData((prev) => {
+          const merged = { ...processedData, ...prev }; // keep prev for overlapping dates
+          const sortedMerged = {};
+          Object.keys(merged)
+            .sort((a, b) => moment(b).valueOf() - moment(a).valueOf())
+            .forEach((d) => {
+              const arr = merged[d] || [];
+              sortedMerged[d] = [...arr].sort(byLiveThenTimeDesc);
+            });
+          return sortedMerged;
         });
-        
-        console.log(`Processed data into ${Object.keys(processedData).length} date groups`);
-        
-        // Update the grouped data with all fetched data
-        setGroupedData(processedData);
         setSearchedAllData(true);
-        
-        console.log(`Updated grouped data, now searching again for: ${query}`);
       }
     } catch (error) {
       console.error('Error fetching all data for search:', error);
@@ -760,9 +799,10 @@ const TrailData = () => {
     
     if (parentQuery.trim()) {
       const q = parentQuery.trim().toLowerCase();
-      console.log(`=== FILTER DEBUG ===`);
-      console.log(`=== FILTER DEBUG ===`);
-      console.log(`Filtering query: "${q}" in ${entries.length} groups`);
+      if (DEBUG_TRAIL_SEARCH) {
+        console.log(`=== FILTER DEBUG ===`);
+        console.log(`Filtering query: "${q}" in ${entries.length} groups`);
+      }
       
       result = result.filter(([parentKey, recs]) => {
         // Check multiple fields for matches
@@ -778,18 +818,8 @@ const TrailData = () => {
                          parentKeyFromRecord.includes(q) || 
                          symbol.includes(q) ||
                          nestedParentId.includes(q);
-          
-          if (q.startsWith('fusion') || q.includes('2025')) {
-            console.log(`Checking record for "${q}":`, {
-              parentOrderId: r.parent_order_id,
-              parentOrderIdLower: parentOrderId,
-              includes: parentOrderId.includes(q),
-              symbol: r.tradingsymbol,
-              parentKey: parentKeyFromRecord
-            });
-          }
-          
-          if (matches) {
+
+          if (DEBUG_TRAIL_SEARCH && matches) {
             console.log(`✓ Match found - Parent ID: ${r.parent_order_id}, Symbol: ${r.tradingsymbol}`);
           }
           
@@ -798,14 +828,17 @@ const TrailData = () => {
         
         return parentKeyMatch || recordMatch;
       });
-      
-      console.log(`Filter result: ${result.length} groups found out of ${entries.length} total`);
+
+      if (DEBUG_TRAIL_SEARCH) {
+        console.log(`Filter result: ${result.length} groups found out of ${entries.length} total`);
+      }
     }
     
     // Ensure deterministic order by latest in each group
+    // (Groups preserve the parent record order because the source date arrays are already sorted.)
     return result.sort(([, a], [, b]) => {
-      const la = [...a].sort(byLiveThenTimeDesc)[0];
-      const lb = [...b].sort(byLiveThenTimeDesc)[0];
+      const la = a?.[0];
+      const lb = b?.[0];
       return byLiveThenTimeDesc(la, lb);
     });
   };
@@ -836,7 +869,7 @@ const TrailData = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (parentQuery.trim()) {
-        console.log(`Triggering search for: "${parentQuery}"`);
+        if (DEBUG_TRAIL_SEARCH) console.log(`Triggering search for: "${parentQuery}"`);
         searchParentOrderData(parentQuery);
       }
     }, 300); // Reduced debounce to 300ms
@@ -846,10 +879,12 @@ const TrailData = () => {
 
   useEffect(() => {
     if (viewMode === 'current' && liveUpdates) {
+      // Run immediately, then poll
+      fetchCurrentDateData();
       const refreshInterval = setInterval(() => fetchCurrentDateData(), 2000);
       return () => clearInterval(refreshInterval);
     }
-  }, [viewMode, liveUpdates]);
+  }, [viewMode, liveUpdates, fetchCurrentDateData]);
 
   // ------------- UI handlers -------------
   const handleViewModeChange = (newMode) => {
