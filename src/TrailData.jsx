@@ -170,6 +170,27 @@ const greeksRocLine = (roc) => {
   return parts.length ? parts.join(' · ') : null;
 };
 
+// Spot can arrive in multiple shapes: entry_greeks._spot, current_greeks._spot,
+// or top-level current_spot_price/entry_spot_price/spot_price fields.
+const pickSpot = (rowOrRecord) => {
+  const spotObj = rowOrRecord?.current_greeks?._spot || rowOrRecord?.entry_greeks?._spot || null;
+  const ltpCandidate =
+    (spotObj && (spotObj.ltp ?? spotObj.spot_ltp)) ??
+    rowOrRecord?.current_spot_price ??
+    rowOrRecord?.entry_spot_price ??
+    rowOrRecord?.current_greeks?.spot_price ??
+    rowOrRecord?.entry_greeks?.spot_price;
+
+  const ltp = Number(ltpCandidate);
+  return {
+    tradingsymbol: spotObj?.tradingsymbol || null,
+    token: spotObj?.token || null,
+    ltp: Number.isFinite(ltp) ? ltp : null,
+  };
+};
+
+const pickTsl = (rowOrRecord) => rowOrRecord?.current_greeks?.tsl || null;
+
 const getGaugeColor = (value) => {
   if (value >= 5) return '#4CAF50';
   if (value >= 1) return '#8BC34A';
@@ -2001,6 +2022,10 @@ const TrailData = () => {
                                         typeof currentRecord?.current_edge !== 'undefined';
                                       if (!hasAny) return null;
 
+                                      const spot = pickSpot(currentRecord);
+                                      const tsl = pickTsl(currentRecord);
+                                      const spotMove = numOrNull(tsl?.moves?.spot_move);
+
                                       const dDelta = greekDiff(current?.delta, entry?.delta);
                                       const dGamma = greekDiff(current?.gamma, entry?.gamma);
                                       const dIv = greekDiff(current?.iv, entry?.iv);
@@ -2133,6 +2158,30 @@ const TrailData = () => {
                                               >
                                                 Greeks: {updatedAt ? `updated ${moment(updatedAt).format('HH:mm:ss')}` : 'updated —'}
                                                 {typeof ageSeconds !== 'undefined' ? ` · age ${formatFixed(ageSeconds, 1)}s` : ''}
+                                              </Typography>
+                                            </Grid>
+                                          )}
+
+                                          {(spot.ltp !== null || tsl?.verdict || tsl?.overlay) && (
+                                            <Grid item xs={12}>
+                                              <Typography
+                                                variant="caption"
+                                                sx={{
+                                                  color: '#9E9E9E',
+                                                  display: 'block',
+                                                  lineHeight: 1.3,
+                                                  textAlign: 'center',
+                                                  fontSize: '0.65rem',
+                                                }}
+                                              >
+                                                {spot.ltp !== null
+                                                  ? `Spot${spot.tradingsymbol ? ` ${spot.tradingsymbol}` : ''} ${formatNumber(spot.ltp)}`
+                                                  : 'Spot —'}
+                                                {spotMove !== null ? ` (ΔS ${formatFixedSigned(spotMove, 2)})` : ''}
+                                                {(tsl?.verdict || tsl?.overlay) ? ' · ' : ''}
+                                                {tsl?.verdict ? `Verdict ${tsl.verdict}` : ''}
+                                                {tsl?.verdict && tsl?.overlay ? ' · ' : ''}
+                                                {tsl?.overlay ? `Overlay ${tsl.overlay}` : ''}
                                               </Typography>
                                             </Grid>
                                           )}
@@ -2521,6 +2570,10 @@ const TrailData = () => {
                                         typeof currentRecord?.current_edge !== 'undefined';
                                       if (!hasAny) return null;
 
+                                      const spot = pickSpot(currentRecord);
+                                      const tsl = pickTsl(currentRecord);
+                                      const spotMove = numOrNull(tsl?.moves?.spot_move);
+
                                       const dDelta = greekDiff(current?.delta, entry?.delta);
                                       const dGamma = greekDiff(current?.gamma, entry?.gamma);
                                       const dIv = greekDiff(current?.iv, entry?.iv);
@@ -2653,6 +2706,30 @@ const TrailData = () => {
                                               >
                                                 Greeks: {updatedAt ? `updated ${moment(updatedAt).format('HH:mm:ss')}` : 'updated —'}
                                                 {typeof ageSeconds !== 'undefined' ? ` · age ${formatFixed(ageSeconds, 1)}s` : ''}
+                                              </Typography>
+                                            </Grid>
+                                          )}
+
+                                          {(spot.ltp !== null || tsl?.verdict || tsl?.overlay) && (
+                                            <Grid item xs={12}>
+                                              <Typography
+                                                variant="caption"
+                                                sx={{
+                                                  color: '#9E9E9E',
+                                                  display: 'block',
+                                                  lineHeight: 1.3,
+                                                  textAlign: 'center',
+                                                  fontSize: '0.65rem',
+                                                }}
+                                              >
+                                                {spot.ltp !== null
+                                                  ? `Spot${spot.tradingsymbol ? ` ${spot.tradingsymbol}` : ''} ${formatNumber(spot.ltp)}`
+                                                  : 'Spot —'}
+                                                {spotMove !== null ? ` (ΔS ${formatFixedSigned(spotMove, 2)})` : ''}
+                                                {(tsl?.verdict || tsl?.overlay) ? ' · ' : ''}
+                                                {tsl?.verdict ? `Verdict ${tsl.verdict}` : ''}
+                                                {tsl?.verdict && tsl?.overlay ? ' · ' : ''}
+                                                {tsl?.overlay ? `Overlay ${tsl.overlay}` : ''}
                                               </Typography>
                                             </Grid>
                                           )}
@@ -2988,6 +3065,10 @@ const TrailData = () => {
                               ? current.age_seconds
                               : current?.greeks_age_seconds;
 
+                          const spot = pickSpot(latest);
+                          const tsl = pickTsl(latest);
+                          const spotMove = numOrNull(tsl?.moves?.spot_move);
+
                           return (
                             <>
                               <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
@@ -3012,10 +3093,46 @@ const TrailData = () => {
                                       }}
                                     />
                                   )}
-                                  {typeof latest?.current_spot_price !== 'undefined' && (
+                                  {(spot.ltp !== null || typeof latest?.current_spot_price !== 'undefined') && (
                                     <Chip
                                       size="small"
-                                      label={`Spot ${formatNumber(latest.current_spot_price)}`}
+                                      label={`${spot.tradingsymbol ? `${spot.tradingsymbol} ` : 'Spot '}${formatNumber(spot.ltp ?? latest.current_spot_price)}`}
+                                      sx={{
+                                        backgroundColor: 'rgba(255,255,255,0.08)',
+                                        color: '#e0e0e0',
+                                        border: '1px solid rgba(255,255,255,0.15)',
+                                        fontFamily: 'monospace'
+                                      }}
+                                    />
+                                  )}
+                                  {spotMove !== null && (
+                                    <Chip
+                                      size="small"
+                                      label={`ΔS ${formatFixedSigned(spotMove, 2)}`}
+                                      sx={{
+                                        backgroundColor: 'rgba(255,255,255,0.08)',
+                                        color: colorBySign(spotMove),
+                                        border: '1px solid rgba(255,255,255,0.15)',
+                                        fontFamily: 'monospace'
+                                      }}
+                                    />
+                                  )}
+                                  {tsl?.verdict && (
+                                    <Chip
+                                      size="small"
+                                      label={`Verdict ${tsl.verdict}`}
+                                      sx={{
+                                        backgroundColor: 'rgba(0, 255, 170, 0.10)',
+                                        color: '#00ffaa',
+                                        border: '1px solid rgba(0, 255, 170, 0.25)',
+                                        fontFamily: 'monospace'
+                                      }}
+                                    />
+                                  )}
+                                  {tsl?.overlay && (
+                                    <Chip
+                                      size="small"
+                                      label={`Overlay ${tsl.overlay}`}
                                       sx={{
                                         backgroundColor: 'rgba(255,255,255,0.08)',
                                         color: '#e0e0e0',
@@ -3072,6 +3189,66 @@ const TrailData = () => {
                                 </Grid>
                               </Grid>
 
+                              {tsl && (
+                                <Box
+                                  sx={{
+                                    mt: 2,
+                                    p: 1.5,
+                                    border: '1px solid rgba(0, 255, 170, 0.2)',
+                                    borderRadius: '10px',
+                                    backgroundColor: 'rgba(255,255,255,0.03)',
+                                  }}
+                                >
+                                  <Typography variant="subtitle2" sx={{ color: '#00ffaa', fontWeight: 'bold', mb: 1 }}>
+                                    TSL (Trail Stop Logic)
+                                  </Typography>
+                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                    {tsl?.mode && (
+                                      <Chip size="small" label={`Mode ${tsl.mode}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#e0e0e0', border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    )}
+                                    {typeof tsl?.fresh !== 'undefined' && (
+                                      <Chip size="small" label={`Fresh ${tsl.fresh ? 'Y' : 'N'}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#e0e0e0', border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    )}
+                                    {typeof tsl?.levels?.sl !== 'undefined' && (
+                                      <Chip size="small" label={`SL ${formatNumber(tsl.levels.sl)}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#e0e0e0', border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    )}
+                                    {typeof tsl?.levels?.target !== 'undefined' && (
+                                      <Chip size="small" label={`Tgt ${formatNumber(tsl.levels.target)}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#e0e0e0', border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    )}
+                                    {typeof tsl?.pnl?.giveback_pp !== 'undefined' && (
+                                      <Chip size="small" label={`Giveback ${formatFixed(tsl.pnl.giveback_pp, 1)}pp`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#e0e0e0', border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    )}
+                                    {typeof tsl?.pnl?.peak_pct !== 'undefined' && (
+                                      <Chip size="small" label={`Peak ${formatFixed(tsl.pnl.peak_pct, 2)}%`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#e0e0e0', border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    )}
+                                  </Box>
+                                  {(tsl?.baseline?.status || tsl?.baseline?.note) && (
+                                    <Typography variant="caption" sx={{ color: '#9E9E9E', display: 'block', mt: 1 }}>
+                                      Baseline: {tsl?.baseline?.status || '—'}{tsl?.baseline?.note ? ` (${tsl.baseline.note})` : ''}
+                                    </Typography>
+                                  )}
+                                  {(Array.isArray(tsl?.reasons?.strengths) || Array.isArray(tsl?.reasons?.warnings) || Array.isArray(tsl?.reasons?.risks)) && (
+                                    <Box sx={{ mt: 1 }}>
+                                      {Array.isArray(tsl?.reasons?.strengths) && tsl.reasons.strengths.length > 0 && (
+                                        <Typography variant="caption" sx={{ color: '#9E9E9E', display: 'block' }}>
+                                          Strengths: {tsl.reasons.strengths.join(' · ')}
+                                        </Typography>
+                                      )}
+                                      {Array.isArray(tsl?.reasons?.warnings) && tsl.reasons.warnings.length > 0 && (
+                                        <Typography variant="caption" sx={{ color: '#9E9E9E', display: 'block' }}>
+                                          Warnings: {tsl.reasons.warnings.join(' · ')}
+                                        </Typography>
+                                      )}
+                                      {Array.isArray(tsl?.reasons?.risks) && tsl.reasons.risks.length > 0 && (
+                                        <Typography variant="caption" sx={{ color: '#9E9E9E', display: 'block' }}>
+                                          Risks: {tsl.reasons.risks.join(' · ')}
+                                        </Typography>
+                                      )}
+                                    </Box>
+                                  )}
+                                </Box>
+                              )}
+
                               <Divider sx={{ my: 2, borderColor: 'rgba(0, 255, 170, 0.2)' }} />
 
                               <Typography variant="subtitle2" sx={{ color: '#00ffaa', mb: 1, fontWeight: 'bold' }}>
@@ -3087,7 +3264,7 @@ const TrailData = () => {
                                 <Table size="small" stickyHeader>
                                   <TableHead>
                                     <TableRow>
-                                      {['Time', 'Δ', 'Γ', 'IV', 'Θ/day', 'Vega', 'Edge', 'Spot', 'Age(s)'].map((h) => (
+                                      {['Time', 'Δ', 'Γ', 'IV', 'Θ/day', 'Vega', 'Edge', 'Spot', 'Age(s)', 'Verdict'].map((h) => (
                                         <TableCell
                                           key={h}
                                           sx={{
@@ -3113,14 +3290,13 @@ const TrailData = () => {
                                         const cg = r?.current_greeks || {};
                                         const edge =
                                           typeof r?.current_edge !== 'undefined' ? r.current_edge : cg?.edge;
-                                        const spot =
-                                          typeof r?.current_spot_price !== 'undefined'
-                                            ? r.current_spot_price
-                                            : cg?.spot_price;
+                                        const spotPicked = pickSpot(r);
+                                        const spot = spotPicked.ltp !== null ? spotPicked.ltp : (typeof r?.current_spot_price !== 'undefined' ? r.current_spot_price : cg?.spot_price);
                                         const age =
                                           typeof cg?.age_seconds !== 'undefined'
                                             ? cg.age_seconds
                                             : cg?.greeks_age_seconds;
+                                        const verdict = cg?.tsl?.verdict;
 
                                         return (
                                           <TableRow key={`${r?.date || idx}-${idx}`} hover>
@@ -3150,6 +3326,9 @@ const TrailData = () => {
                                             </TableCell>
                                             <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
                                               {typeof age !== 'undefined' ? formatFixed(age, 1) : '—'}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>
+                                              {verdict || '—'}
                                             </TableCell>
                                           </TableRow>
                                         );
