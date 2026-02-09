@@ -16,6 +16,7 @@ import {
   DialogContent,
   IconButton,
   Button,
+  Divider,
   FormControl,
   InputLabel,
   Select,
@@ -23,7 +24,13 @@ import {
   Switch,
   FormControlLabel,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
@@ -115,6 +122,53 @@ const formatSigned = (value) => {
 };
 
 const formatDate = (dateString) => (dateString ? moment(dateString).format('DD-MM-YYYY') : 'N/A');
+
+const formatFixed = (value, decimals = 4) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num.toFixed(decimals) : '—';
+};
+
+const formatFixedSigned = (value, decimals = 4) => {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return '—';
+  const sign = num > 0 ? '+' : '';
+  return `${sign}${num.toFixed(decimals)}`;
+};
+
+const numOrNull = (value) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+};
+
+const safeGreeks = (record) => {
+  const current = record?.current_greeks || {};
+  const entry = record?.entry_greeks || {};
+  return { current, entry };
+};
+
+const greekDiff = (currentValue, entryValue) => {
+  const c = numOrNull(currentValue);
+  const e = numOrNull(entryValue);
+  if (c === null || e === null) return null;
+  return c - e;
+};
+
+const colorBySign = (value) => {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return '#9E9E9E';
+  if (num > 0) return '#4CAF50';
+  if (num < 0) return '#F44336';
+  return '#FFEB3B';
+};
+
+const greeksRocLine = (roc) => {
+  if (!roc) return null;
+  const parts = [];
+  if (typeof roc.delta_roc_per_min !== 'undefined') parts.push(`Δ ${formatFixedSigned(roc.delta_roc_per_min, 4)}`);
+  if (typeof roc.iv_roc_pct_per_min !== 'undefined') parts.push(`IV% ${formatFixedSigned(roc.iv_roc_pct_per_min, 2)}`);
+  if (typeof roc.edge_roc_per_min !== 'undefined') parts.push(`Edge ${formatFixedSigned(roc.edge_roc_per_min, 2)}`);
+  return parts.length ? parts.join(' · ') : null;
+};
 
 const getGaugeColor = (value) => {
   if (value >= 5) return '#4CAF50';
@@ -506,6 +560,8 @@ const TrailData = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [chartData, setChartData] = useState(null);
   const [chartLoading, setChartLoading] = useState(false);
+  const [greeksRows, setGreeksRows] = useState([]);
+  const [greeksParentOrderId, setGreeksParentOrderId] = useState(null);
   const [aggregationInterval, setAggregationInterval] = useState('1min'); // 1min, 5min, 15min, 30min, 1hour
   const [timeRange, setTimeRange] = useState('all'); // all, 1hour, 6hours, 12hours, 1day
   const [searchedAllData, setSearchedAllData] = useState(false);
@@ -967,12 +1023,14 @@ const TrailData = () => {
     
     setChartLoading(true);
     try {
+      setGreeksParentOrderId(parentOrderId);
       const response = await httpApi.get(`/trail-data?parent_order_id=${parentOrderId}`);
       const apiData = response.data || {};
       const rows = apiData.rows || [];
       
       if (rows.length === 0) {
         setChartData(null);
+        setGreeksRows([]);
         setChartLoading(false);
         return;
       }
@@ -982,6 +1040,9 @@ const TrailData = () => {
       
       // Apply time range filter
       const filteredRows = filterDataByTimeRange(sortedRows, timeRange);
+
+      // Keep raw (unaggregated) rows for greeks table
+      setGreeksRows(filteredRows);
       
       // Apply aggregation if dataset is large or user selected aggregation
       const shouldAggregate = filteredRows.length > 100 || aggregationInterval !== '1min';
@@ -989,6 +1050,7 @@ const TrailData = () => {
       
       if (processedRows.length === 0) {
         setChartData(null);
+        setGreeksRows([]);
         setChartLoading(false);
         return;
       }
@@ -1072,6 +1134,7 @@ const TrailData = () => {
     } catch (error) {
       console.error('Error fetching chart data:', error);
       setChartData(null);
+      setGreeksRows([]);
     } finally {
       setChartLoading(false);
     }
@@ -1097,6 +1160,8 @@ const TrailData = () => {
     setSelectedSymbol(null);
     setSymbolData([]);
     setChartData(null);
+    setGreeksRows([]);
+    setGreeksParentOrderId(null);
   };
 
   // ------------- Stats -------------
@@ -1796,7 +1861,7 @@ const TrailData = () => {
                                   </Box>
                                 )}
 
-                              {/* Trail Status */}}
+                              {/* Trail Status */}
                               {currentRecord && (
                                 <Box
                                   sx={{
@@ -1927,6 +1992,153 @@ const TrailData = () => {
                                         )}
                                       </Typography>
                                     </Grid>
+
+                                    {(() => {
+                                      const { current, entry } = safeGreeks(currentRecord);
+                                      const hasAny =
+                                        typeof current?.delta !== 'undefined' ||
+                                        typeof entry?.delta !== 'undefined' ||
+                                        typeof currentRecord?.current_edge !== 'undefined';
+                                      if (!hasAny) return null;
+
+                                      const dDelta = greekDiff(current?.delta, entry?.delta);
+                                      const dGamma = greekDiff(current?.gamma, entry?.gamma);
+                                      const dIv = greekDiff(current?.iv, entry?.iv);
+                                      const dTheta = greekDiff(current?.theta_per_day, entry?.theta_per_day);
+                                      const dVega = greekDiff(current?.vega, entry?.vega);
+
+                                      const edgeCurrent =
+                                        typeof currentRecord?.current_edge !== 'undefined'
+                                          ? currentRecord.current_edge
+                                          : current?.edge;
+                                      const edgeEntry = entry?.edge;
+                                      const dEdge = greekDiff(edgeCurrent, edgeEntry);
+
+                                      const rocLine = greeksRocLine(current?.roc);
+                                      const updatedAt = current?.updated_at;
+                                      const ageSeconds =
+                                        typeof current?.age_seconds !== 'undefined'
+                                          ? current.age_seconds
+                                          : current?.greeks_age_seconds;
+
+                                      return (
+                                        <>
+                                          <Grid
+                                            item
+                                            xs={12}
+                                            sx={{ mt: 0.5, pt: 0.5, borderTop: '1px solid #00ffaa20' }}
+                                          >
+                                            <Typography
+                                              variant="caption"
+                                              sx={{
+                                                color: '#00ffaa',
+                                                fontWeight: 'bold',
+                                                display: 'block',
+                                                textAlign: 'center',
+                                                fontSize: '0.7rem',
+                                              }}
+                                            >
+                                              Greeks (Current vs Entry)
+                                            </Typography>
+                                          </Grid>
+
+                                          <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3 }}>
+                                              <strong style={{ color: '#FFFFFF' }}>Δ:</strong>{' '}
+                                              {formatFixed(current?.delta, 4)}{' '}
+                                              <span style={{ color: colorBySign(dDelta), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dDelta, 4)})
+                                              </span>
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3 }}>
+                                              <strong style={{ color: '#FFFFFF' }}>IV:</strong>{' '}
+                                              {formatFixed(current?.iv, 4)}{' '}
+                                              <span style={{ color: colorBySign(dIv), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dIv, 4)})
+                                              </span>
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3 }}>
+                                              <strong style={{ color: '#FFFFFF' }}>Γ:</strong>{' '}
+                                              {formatFixed(current?.gamma, 6)}{' '}
+                                              <span style={{ color: colorBySign(dGamma), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dGamma, 6)})
+                                              </span>
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3 }}>
+                                              <strong style={{ color: '#FFFFFF' }}>Vega:</strong>{' '}
+                                              {formatFixed(current?.vega, 3)}{' '}
+                                              <span style={{ color: colorBySign(dVega), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dVega, 3)})
+                                              </span>
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item xs={12}>
+                                            <Typography
+                                              variant="caption"
+                                              sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3, textAlign: 'center' }}
+                                            >
+                                              <strong style={{ color: '#FFFFFF' }}>Θ/day:</strong>{' '}
+                                              {formatFixed(current?.theta_per_day, 2)}{' '}
+                                              <span style={{ color: colorBySign(dTheta), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dTheta, 2)})
+                                              </span>
+                                              {typeof edgeCurrent !== 'undefined' && (
+                                                <>
+                                                  {' '}
+                                                  <span style={{ color: '#9E9E9E' }}>·</span>{' '}
+                                                  <strong style={{ color: '#FFFFFF' }}>Edge:</strong>{' '}
+                                                  {formatFixed(edgeCurrent, 2)}{' '}
+                                                  <span style={{ color: colorBySign(dEdge), fontWeight: 700 }}>
+                                                    ({formatFixedSigned(dEdge, 2)})
+                                                  </span>
+                                                </>
+                                              )}
+                                            </Typography>
+                                          </Grid>
+
+                                          {rocLine && (
+                                            <Grid item xs={12}>
+                                              <Typography
+                                                variant="caption"
+                                                sx={{
+                                                  color: '#9E9E9E',
+                                                  display: 'block',
+                                                  lineHeight: 1.3,
+                                                  textAlign: 'center',
+                                                  fontSize: '0.65rem',
+                                                }}
+                                              >
+                                                ROC/min: {rocLine}
+                                              </Typography>
+                                            </Grid>
+                                          )}
+
+                                          {(updatedAt || typeof ageSeconds !== 'undefined') && (
+                                            <Grid item xs={12}>
+                                              <Typography
+                                                variant="caption"
+                                                sx={{
+                                                  color: '#9E9E9E',
+                                                  display: 'block',
+                                                  lineHeight: 1.3,
+                                                  textAlign: 'center',
+                                                  fontSize: '0.65rem',
+                                                }}
+                                              >
+                                                Greeks: {updatedAt ? `updated ${moment(updatedAt).format('HH:mm:ss')}` : 'updated —'}
+                                                {typeof ageSeconds !== 'undefined' ? ` · age ${formatFixed(ageSeconds, 1)}s` : ''}
+                                              </Typography>
+                                            </Grid>
+                                          )}
+                                        </>
+                                      );
+                                    })()}
                                     <Grid
                                       item
                                       xs={12}
@@ -2300,6 +2512,153 @@ const TrailData = () => {
                                         )}
                                       </Typography>
                                     </Grid>
+
+                                    {(() => {
+                                      const { current, entry } = safeGreeks(currentRecord);
+                                      const hasAny =
+                                        typeof current?.delta !== 'undefined' ||
+                                        typeof entry?.delta !== 'undefined' ||
+                                        typeof currentRecord?.current_edge !== 'undefined';
+                                      if (!hasAny) return null;
+
+                                      const dDelta = greekDiff(current?.delta, entry?.delta);
+                                      const dGamma = greekDiff(current?.gamma, entry?.gamma);
+                                      const dIv = greekDiff(current?.iv, entry?.iv);
+                                      const dTheta = greekDiff(current?.theta_per_day, entry?.theta_per_day);
+                                      const dVega = greekDiff(current?.vega, entry?.vega);
+
+                                      const edgeCurrent =
+                                        typeof currentRecord?.current_edge !== 'undefined'
+                                          ? currentRecord.current_edge
+                                          : current?.edge;
+                                      const edgeEntry = entry?.edge;
+                                      const dEdge = greekDiff(edgeCurrent, edgeEntry);
+
+                                      const rocLine = greeksRocLine(current?.roc);
+                                      const updatedAt = current?.updated_at;
+                                      const ageSeconds =
+                                        typeof current?.age_seconds !== 'undefined'
+                                          ? current.age_seconds
+                                          : current?.greeks_age_seconds;
+
+                                      return (
+                                        <>
+                                          <Grid
+                                            item
+                                            xs={12}
+                                            sx={{ mt: 0.5, pt: 0.5, borderTop: '1px solid #00ffaa20' }}
+                                          >
+                                            <Typography
+                                              variant="caption"
+                                              sx={{
+                                                color: '#00ffaa',
+                                                fontWeight: 'bold',
+                                                display: 'block',
+                                                textAlign: 'center',
+                                                fontSize: '0.7rem',
+                                              }}
+                                            >
+                                              Greeks (Current vs Entry)
+                                            </Typography>
+                                          </Grid>
+
+                                          <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3 }}>
+                                              <strong style={{ color: '#FFFFFF' }}>Δ:</strong>{' '}
+                                              {formatFixed(current?.delta, 4)}{' '}
+                                              <span style={{ color: colorBySign(dDelta), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dDelta, 4)})
+                                              </span>
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3 }}>
+                                              <strong style={{ color: '#FFFFFF' }}>IV:</strong>{' '}
+                                              {formatFixed(current?.iv, 4)}{' '}
+                                              <span style={{ color: colorBySign(dIv), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dIv, 4)})
+                                              </span>
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3 }}>
+                                              <strong style={{ color: '#FFFFFF' }}>Γ:</strong>{' '}
+                                              {formatFixed(current?.gamma, 6)}{' '}
+                                              <span style={{ color: colorBySign(dGamma), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dGamma, 6)})
+                                              </span>
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item xs={6}>
+                                            <Typography variant="caption" sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3 }}>
+                                              <strong style={{ color: '#FFFFFF' }}>Vega:</strong>{' '}
+                                              {formatFixed(current?.vega, 3)}{' '}
+                                              <span style={{ color: colorBySign(dVega), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dVega, 3)})
+                                              </span>
+                                            </Typography>
+                                          </Grid>
+                                          <Grid item xs={12}>
+                                            <Typography
+                                              variant="caption"
+                                              sx={{ color: '#e0e0e0', display: 'block', lineHeight: 1.3, textAlign: 'center' }}
+                                            >
+                                              <strong style={{ color: '#FFFFFF' }}>Θ/day:</strong>{' '}
+                                              {formatFixed(current?.theta_per_day, 2)}{' '}
+                                              <span style={{ color: colorBySign(dTheta), fontWeight: 700 }}>
+                                                ({formatFixedSigned(dTheta, 2)})
+                                              </span>
+                                              {typeof edgeCurrent !== 'undefined' && (
+                                                <>
+                                                  {' '}
+                                                  <span style={{ color: '#9E9E9E' }}>·</span>{' '}
+                                                  <strong style={{ color: '#FFFFFF' }}>Edge:</strong>{' '}
+                                                  {formatFixed(edgeCurrent, 2)}{' '}
+                                                  <span style={{ color: colorBySign(dEdge), fontWeight: 700 }}>
+                                                    ({formatFixedSigned(dEdge, 2)})
+                                                  </span>
+                                                </>
+                                              )}
+                                            </Typography>
+                                          </Grid>
+
+                                          {rocLine && (
+                                            <Grid item xs={12}>
+                                              <Typography
+                                                variant="caption"
+                                                sx={{
+                                                  color: '#9E9E9E',
+                                                  display: 'block',
+                                                  lineHeight: 1.3,
+                                                  textAlign: 'center',
+                                                  fontSize: '0.65rem',
+                                                }}
+                                              >
+                                                ROC/min: {rocLine}
+                                              </Typography>
+                                            </Grid>
+                                          )}
+
+                                          {(updatedAt || typeof ageSeconds !== 'undefined') && (
+                                            <Grid item xs={12}>
+                                              <Typography
+                                                variant="caption"
+                                                sx={{
+                                                  color: '#9E9E9E',
+                                                  display: 'block',
+                                                  lineHeight: 1.3,
+                                                  textAlign: 'center',
+                                                  fontSize: '0.65rem',
+                                                }}
+                                              >
+                                                Greeks: {updatedAt ? `updated ${moment(updatedAt).format('HH:mm:ss')}` : 'updated —'}
+                                                {typeof ageSeconds !== 'undefined' ? ` · age ${formatFixed(ageSeconds, 1)}s` : ''}
+                                              </Typography>
+                                            </Grid>
+                                          )}
+                                        </>
+                                      );
+                                    })()}
                                     <Grid
                                       item
                                       xs={12}
@@ -2449,10 +2808,11 @@ const TrailData = () => {
                 </Typography>
               </Box>
             ) : chartData ? (
-              <Box sx={{ height: '500px', width: '100%' }}>
-                <Line
-                  data={chartData}
-                  options={{
+              <Box>
+                <Box sx={{ height: '500px', width: '100%' }}>
+                  <Line
+                    data={chartData}
+                    options={{
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
@@ -2590,8 +2950,220 @@ const TrailData = () => {
                         loop: false
                       }
                     }
-                  }}
-                />
+                    }}
+                  />
+                </Box>
+
+                {greeksRows.length > 0 && (
+                  <Box sx={{ mt: 3 }}>
+                    <Card
+                      sx={{
+                        background: 'linear-gradient(135deg, #070808 0%, #0f1419 50%, #070808 100%)',
+                        border: '2px solid rgba(0, 255, 170, 0.35)',
+                        borderRadius: '12px',
+                      }}
+                    >
+                      <CardContent>
+                        {(() => {
+                          const latest = greeksRows[greeksRows.length - 1];
+                          const first = greeksRows[0];
+                          const current = latest?.current_greeks || {};
+                          const entry = latest?.entry_greeks || first?.entry_greeks || {};
+
+                          const dDelta = greekDiff(current?.delta, entry?.delta);
+                          const dGamma = greekDiff(current?.gamma, entry?.gamma);
+                          const dIv = greekDiff(current?.iv, entry?.iv);
+                          const dTheta = greekDiff(current?.theta_per_day, entry?.theta_per_day);
+                          const dVega = greekDiff(current?.vega, entry?.vega);
+
+                          const edgeCurrent =
+                            typeof latest?.current_edge !== 'undefined' ? latest.current_edge : current?.edge;
+                          const edgeEntry = entry?.edge;
+                          const dEdge = greekDiff(edgeCurrent, edgeEntry);
+
+                          const rocLine = greeksRocLine(current?.roc);
+                          const updatedAt = current?.updated_at;
+                          const ageSeconds =
+                            typeof current?.age_seconds !== 'undefined'
+                              ? current.age_seconds
+                              : current?.greeks_age_seconds;
+
+                          return (
+                            <>
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+                                <Box>
+                                  <Typography variant="h6" sx={{ color: '#00ffaa', fontWeight: 'bold' }}>
+                                    Greeks Snapshot
+                                  </Typography>
+                                  <Typography variant="caption" sx={{ color: '#9E9E9E' }}>
+                                    Parent: {greeksParentOrderId || '—'} · Latest: {latest?.date ? moment(latest.date).format('DD-MM HH:mm:ss') : '—'}
+                                  </Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                                  {typeof latest?.iv_change_pct !== 'undefined' && (
+                                    <Chip
+                                      size="small"
+                                      label={`IV Δ% ${formatFixedSigned(latest.iv_change_pct, 1)}`}
+                                      sx={{
+                                        backgroundColor: 'rgba(255,255,255,0.08)',
+                                        color: colorBySign(latest.iv_change_pct),
+                                        border: '1px solid rgba(255,255,255,0.15)',
+                                        fontFamily: 'monospace'
+                                      }}
+                                    />
+                                  )}
+                                  {typeof latest?.current_spot_price !== 'undefined' && (
+                                    <Chip
+                                      size="small"
+                                      label={`Spot ${formatNumber(latest.current_spot_price)}`}
+                                      sx={{
+                                        backgroundColor: 'rgba(255,255,255,0.08)',
+                                        color: '#e0e0e0',
+                                        border: '1px solid rgba(255,255,255,0.15)',
+                                        fontFamily: 'monospace'
+                                      }}
+                                    />
+                                  )}
+                                </Box>
+                              </Box>
+
+                              <Grid container spacing={1.5}>
+                                <Grid item xs={12} md={6}>
+                                  <Typography variant="subtitle2" sx={{ color: '#FFFFFF', mb: 1 }}>
+                                    Current (live)
+                                  </Typography>
+                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                    <Chip size="small" label={`Δ ${formatFixed(current?.delta, 4)}`} sx={{ backgroundColor: '#00ffaa15', color: '#e0e0e0', border: '1px solid #00ffaa30', fontFamily: 'monospace' }} />
+                                    <Chip size="small" label={`Γ ${formatFixed(current?.gamma, 6)}`} sx={{ backgroundColor: '#00ffaa15', color: '#e0e0e0', border: '1px solid #00ffaa30', fontFamily: 'monospace' }} />
+                                    <Chip size="small" label={`IV ${formatFixed(current?.iv, 4)}`} sx={{ backgroundColor: '#00ffaa15', color: '#e0e0e0', border: '1px solid #00ffaa30', fontFamily: 'monospace' }} />
+                                    <Chip size="small" label={`Θ/d ${formatFixed(current?.theta_per_day, 2)}`} sx={{ backgroundColor: '#00ffaa15', color: '#e0e0e0', border: '1px solid #00ffaa30', fontFamily: 'monospace' }} />
+                                    <Chip size="small" label={`Vega ${formatFixed(current?.vega, 3)}`} sx={{ backgroundColor: '#00ffaa15', color: '#e0e0e0', border: '1px solid #00ffaa30', fontFamily: 'monospace' }} />
+                                    {typeof edgeCurrent !== 'undefined' && (
+                                      <Chip size="small" label={`Edge ${formatFixed(edgeCurrent, 2)}`} sx={{ backgroundColor: '#00ffaa15', color: '#e0e0e0', border: '1px solid #00ffaa30', fontFamily: 'monospace' }} />
+                                    )}
+                                  </Box>
+                                  {(updatedAt || typeof ageSeconds !== 'undefined') && (
+                                    <Typography variant="caption" sx={{ color: '#9E9E9E', display: 'block', mt: 1 }}>
+                                      Updated: {updatedAt ? moment(updatedAt).format('HH:mm:ss') : '—'}
+                                      {typeof ageSeconds !== 'undefined' ? ` · age ${formatFixed(ageSeconds, 1)}s` : ''}
+                                    </Typography>
+                                  )}
+                                  {rocLine && (
+                                    <Typography variant="caption" sx={{ color: '#9E9E9E', display: 'block', mt: 0.5 }}>
+                                      ROC/min: {rocLine}
+                                    </Typography>
+                                  )}
+                                </Grid>
+
+                                <Grid item xs={12} md={6}>
+                                  <Typography variant="subtitle2" sx={{ color: '#FFFFFF', mb: 1 }}>
+                                    Change vs entry
+                                  </Typography>
+                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                    <Chip size="small" label={`Δ ${formatFixedSigned(dDelta, 4)}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: colorBySign(dDelta), border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    <Chip size="small" label={`Γ ${formatFixedSigned(dGamma, 6)}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: colorBySign(dGamma), border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    <Chip size="small" label={`IV ${formatFixedSigned(dIv, 4)}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: colorBySign(dIv), border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    <Chip size="small" label={`Θ/d ${formatFixedSigned(dTheta, 2)}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: colorBySign(dTheta), border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    <Chip size="small" label={`Vega ${formatFixedSigned(dVega, 3)}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: colorBySign(dVega), border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    {typeof edgeCurrent !== 'undefined' && (
+                                      <Chip size="small" label={`Edge ${formatFixedSigned(dEdge, 2)}`} sx={{ backgroundColor: 'rgba(255,255,255,0.08)', color: colorBySign(dEdge), border: '1px solid rgba(255,255,255,0.15)', fontFamily: 'monospace' }} />
+                                    )}
+                                  </Box>
+                                </Grid>
+                              </Grid>
+
+                              <Divider sx={{ my: 2, borderColor: 'rgba(0, 255, 170, 0.2)' }} />
+
+                              <Typography variant="subtitle2" sx={{ color: '#00ffaa', mb: 1, fontWeight: 'bold' }}>
+                                Recent Greeks Samples (latest first)
+                              </Typography>
+                              <TableContainer
+                                sx={{
+                                  border: '1px solid rgba(0, 255, 170, 0.2)',
+                                  borderRadius: '10px',
+                                  maxHeight: 360,
+                                }}
+                              >
+                                <Table size="small" stickyHeader>
+                                  <TableHead>
+                                    <TableRow>
+                                      {['Time', 'Δ', 'Γ', 'IV', 'Θ/day', 'Vega', 'Edge', 'Spot', 'Age(s)'].map((h) => (
+                                        <TableCell
+                                          key={h}
+                                          sx={{
+                                            backgroundColor: '#070808',
+                                            color: '#e0e0e0',
+                                            borderBottom: '1px solid rgba(0, 255, 170, 0.2)',
+                                            fontFamily: 'monospace',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 700,
+                                            whiteSpace: 'nowrap',
+                                          }}
+                                        >
+                                          {h}
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    {[...greeksRows]
+                                      .slice(-50)
+                                      .reverse()
+                                      .map((r, idx) => {
+                                        const cg = r?.current_greeks || {};
+                                        const edge =
+                                          typeof r?.current_edge !== 'undefined' ? r.current_edge : cg?.edge;
+                                        const spot =
+                                          typeof r?.current_spot_price !== 'undefined'
+                                            ? r.current_spot_price
+                                            : cg?.spot_price;
+                                        const age =
+                                          typeof cg?.age_seconds !== 'undefined'
+                                            ? cg.age_seconds
+                                            : cg?.greeks_age_seconds;
+
+                                        return (
+                                          <TableRow key={`${r?.date || idx}-${idx}`} hover>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>
+                                              {r?.date ? moment(r.date).format('HH:mm:ss') : '—'}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
+                                              {formatFixed(cg?.delta, 4)}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
+                                              {formatFixed(cg?.gamma, 6)}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
+                                              {formatFixed(cg?.iv, 4)}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
+                                              {formatFixed(cg?.theta_per_day, 2)}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
+                                              {formatFixed(cg?.vega, 3)}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
+                                              {typeof edge !== 'undefined' ? formatFixed(edge, 2) : '—'}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
+                                              {typeof spot !== 'undefined' ? formatNumber(spot) : '—'}
+                                            </TableCell>
+                                            <TableCell sx={{ color: '#e0e0e0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'monospace' }}>
+                                              {typeof age !== 'undefined' ? formatFixed(age, 1) : '—'}
+                                            </TableCell>
+                                          </TableRow>
+                                        );
+                                      })}
+                                  </TableBody>
+                                </Table>
+                              </TableContainer>
+                            </>
+                          );
+                        })()}
+                      </CardContent>
+                    </Card>
+                  </Box>
+                )}
               </Box>
             ) : (
               <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
