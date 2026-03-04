@@ -609,6 +609,20 @@ const TrailData = () => {
     };
   }, []);
 
+  // Ensure we always bypass any intermediary/browser caching on GETs.
+  // (API already sends no-store, but this prevents “stale until refresh” symptoms.)
+  const withNoCache = (url) => `${url}${url.includes('?') ? '&' : '?'}_ts=${Date.now()}`;
+
+  const sortGroupedByDateDesc = (grouped) => {
+    const sorted = {};
+    Object.keys(grouped)
+      .sort((a, b) => moment(b).valueOf() - moment(a).valueOf())
+      .forEach((d) => {
+        sorted[d] = grouped[d];
+      });
+    return sorted;
+  };
+
   // ------------- Data fetchers -------------
   const normalizeIncoming = (items = [], asLive = false) =>
     items.map((r) => {
@@ -626,10 +640,11 @@ const TrailData = () => {
   const fetchTrailData = async () => {
     try {
       setLoading(true);
+      setError(null);
 
       if (viewMode === 'current') {
         const today = moment().format('YYYY-MM-DD');
-        const res = await httpApi.get(`/trail-data/summary?date=${today}`);
+        const res = await httpApi.get(withNoCache(`/trail-data/summary?date=${today}`));
 
         const live = normalizeIncoming(res.data.live || [], true);
         const historical = normalizeIncoming(res.data.historical || [], false);
@@ -654,7 +669,7 @@ const TrailData = () => {
         setGroupedData(sortedGrouped);
       } else if (viewMode === 'historical') {
         const day = selectedDate;
-        const res = await httpApi.get(`/trail-data/summary?date=${day}`);
+        const res = await httpApi.get(withNoCache(`/trail-data/summary?date=${day}`));
 
         const live = normalizeIncoming(res.data.live || [], true);
         const historical = normalizeIncoming(res.data.historical || [], false);
@@ -667,7 +682,7 @@ const TrailData = () => {
           return acc;
         }, {});
         Object.keys(grouped).forEach((d) => grouped[d].sort(byLiveThenTimeDesc));
-        setGroupedData(grouped);
+        setGroupedData(sortGroupedByDateDesc(grouped));
       } else {
         const start =
           viewMode === 'all'
@@ -675,7 +690,9 @@ const TrailData = () => {
             : dateRange.start;
         const end = viewMode === 'all' ? moment().format('YYYY-MM-DD') : dateRange.end;
 
-        const res = await httpApi.get(`/trail-data/range?start_date=${start}&end_date=${end}`);
+        const res = await httpApi.get(
+          withNoCache(`/trail-data/range?start_date=${start}&end_date=${end}`)
+        );
         const data = normalizeIncoming(res.data.data || [], false);
 
         const grouped = data.reduce((acc, item) => {
@@ -708,14 +725,14 @@ const TrailData = () => {
       pollInFlightRef.current = true;
       setRefreshing(true);
       const today = moment().format('YYYY-MM-DD');
-      const res = await httpApi.get(`/trail-data/summary?date=${today}`);
+      const res = await httpApi.get(withNoCache(`/trail-data/summary?date=${today}`));
 
       const live = normalizeIncoming(res.data.live || [], true);
       const historical = normalizeIncoming(res.data.historical || [], false);
       const combined = [...live, ...historical].sort(byLiveThenTimeDesc);
 
       if (!mountedRef.current) return;
-      setGroupedData((prev) => ({ ...prev, [today]: combined }));
+      setGroupedData((prev) => sortGroupedByDateDesc({ ...prev, [today]: combined }));
     } catch (err) {
       console.error('Error fetching current date data:', err);
     } finally {
@@ -816,11 +833,7 @@ const TrailData = () => {
       setRefreshing(true);
       
       // Fetch all data from API (last 30 days)
-      const allData = await httpApi.get('/trail-data', {
-        params: {
-          lookback_days: 30
-        }
-      });
+      const allData = await httpApi.get(withNoCache('/trail-data?lookback_days=30'));
       
       const payload = allData?.data;
       const rows = Array.isArray(payload)
@@ -937,6 +950,17 @@ const TrailData = () => {
     }
   };
 
+  // Keep stable references for event listeners.
+  const fetchTrailDataRef = useRef(fetchTrailData);
+  useEffect(() => {
+    fetchTrailDataRef.current = fetchTrailData;
+  }, [fetchTrailData]);
+
+  const fetchCurrentDateDataRef = useRef(fetchCurrentDateData);
+  useEffect(() => {
+    fetchCurrentDateDataRef.current = fetchCurrentDateData;
+  }, [fetchCurrentDateData]);
+
   // ------------- Effects -------------
   useEffect(() => {
     fetchTrailData();
@@ -962,6 +986,34 @@ const TrailData = () => {
       return () => clearInterval(refreshInterval);
     }
   }, [viewMode, liveUpdates, fetchCurrentDateData]);
+
+  // If the tab was backgrounded (timers throttled) or the user comes back
+  // to this page, force a refresh so P&L isn't stale until manual reload.
+  useEffect(() => {
+    const refreshNow = () => {
+      if (!mountedRef.current) return;
+
+      const visibilityState = typeof document !== 'undefined' ? document.visibilityState : 'visible';
+      if (visibilityState && visibilityState !== 'visible') return;
+
+      if (viewMode === 'current') {
+        fetchCurrentDateDataRef.current?.();
+      } else {
+        fetchTrailDataRef.current?.();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') refreshNow();
+    };
+
+    window.addEventListener('focus', refreshNow);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      window.removeEventListener('focus', refreshNow);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, [viewMode]);
 
   // ------------- UI handlers -------------
   const handleViewModeChange = (newMode) => {
@@ -1045,7 +1097,9 @@ const TrailData = () => {
     setChartLoading(true);
     try {
       setGreeksParentOrderId(parentOrderId);
-      const response = await httpApi.get(`/trail-data?parent_order_id=${parentOrderId}`);
+      const response = await httpApi.get(
+        withNoCache(`/trail-data?parent_order_id=${encodeURIComponent(parentOrderId)}`)
+      );
       const apiData = response.data || {};
       const rows = apiData.rows || [];
       
@@ -2026,6 +2080,19 @@ const TrailData = () => {
                                       const tsl = pickTsl(currentRecord);
                                       const spotMove = numOrNull(tsl?.moves?.spot_move);
 
+                                      const verdict = tsl?.verdict;
+                                      const verdictLabel = verdict
+                                        ? `${tsl?.verdict_emoji ? `${tsl.verdict_emoji} ` : ''}${verdict}`
+                                        : null;
+                                      const verdictColor =
+                                        verdict === 'CONSIDER_EXIT'
+                                          ? '#FF4444'
+                                          : verdict === 'WATCH'
+                                            ? '#FFEB3B'
+                                            : verdict === 'HOLD'
+                                              ? '#00ffaa'
+                                              : '#e0e0e0';
+
                                       const dDelta = greekDiff(current?.delta, entry?.delta);
                                       const dGamma = greekDiff(current?.gamma, entry?.gamma);
                                       const dIv = greekDiff(current?.iv, entry?.iv);
@@ -2179,7 +2246,16 @@ const TrailData = () => {
                                                   : 'Spot —'}
                                                 {spotMove !== null ? ` (ΔS ${formatFixedSigned(spotMove, 2)})` : ''}
                                                 {(tsl?.verdict || tsl?.overlay) ? ' · ' : ''}
-                                                {tsl?.verdict ? `Verdict ${tsl.verdict}` : ''}
+                                                {verdictLabel ? (
+                                                  <>
+                                                    <span style={{ color: '#9E9E9E' }}> · </span>
+                                                    <span style={{ color: verdictColor, fontWeight: 700 }}>
+                                                      {`Verdict ${verdictLabel}`}
+                                                    </span>
+                                                  </>
+                                                ) : (
+                                                  ''
+                                                )}
                                                 {tsl?.verdict && tsl?.overlay ? ' · ' : ''}
                                                 {tsl?.overlay ? `Overlay ${tsl.overlay}` : ''}
                                               </Typography>
@@ -2574,6 +2650,19 @@ const TrailData = () => {
                                       const tsl = pickTsl(currentRecord);
                                       const spotMove = numOrNull(tsl?.moves?.spot_move);
 
+                                      const verdict = tsl?.verdict;
+                                      const verdictLabel = verdict
+                                        ? `${tsl?.verdict_emoji ? `${tsl.verdict_emoji} ` : ''}${verdict}`
+                                        : null;
+                                      const verdictColor =
+                                        verdict === 'CONSIDER_EXIT'
+                                          ? '#FF4444'
+                                          : verdict === 'WATCH'
+                                            ? '#FFEB3B'
+                                            : verdict === 'HOLD'
+                                              ? '#00ffaa'
+                                              : '#e0e0e0';
+
                                       const dDelta = greekDiff(current?.delta, entry?.delta);
                                       const dGamma = greekDiff(current?.gamma, entry?.gamma);
                                       const dIv = greekDiff(current?.iv, entry?.iv);
@@ -2727,7 +2816,16 @@ const TrailData = () => {
                                                   : 'Spot —'}
                                                 {spotMove !== null ? ` (ΔS ${formatFixedSigned(spotMove, 2)})` : ''}
                                                 {(tsl?.verdict || tsl?.overlay) ? ' · ' : ''}
-                                                {tsl?.verdict ? `Verdict ${tsl.verdict}` : ''}
+                                                {verdictLabel ? (
+                                                  <>
+                                                    <span style={{ color: '#9E9E9E' }}> · </span>
+                                                    <span style={{ color: verdictColor, fontWeight: 700 }}>
+                                                      {`Verdict ${verdictLabel}`}
+                                                    </span>
+                                                  </>
+                                                ) : (
+                                                  ''
+                                                )}
                                                 {tsl?.verdict && tsl?.overlay ? ' · ' : ''}
                                                 {tsl?.overlay ? `Overlay ${tsl.overlay}` : ''}
                                               </Typography>
@@ -3069,6 +3167,28 @@ const TrailData = () => {
                           const tsl = pickTsl(latest);
                           const spotMove = numOrNull(tsl?.moves?.spot_move);
 
+                          const verdict = tsl?.verdict;
+                          const verdictLabel = verdict
+                            ? `${tsl?.verdict_emoji ? `${tsl.verdict_emoji} ` : ''}${verdict}`
+                            : null;
+                          const verdictColor =
+                            verdict === 'CONSIDER_EXIT'
+                              ? '#FF4444'
+                              : verdict === 'WATCH'
+                                ? '#FFEB3B'
+                                : verdict === 'HOLD'
+                                  ? '#00ffaa'
+                                  : '#e0e0e0';
+
+                          const warningsText = Array.isArray(tsl?.reasons?.warnings)
+                            ? tsl.reasons.warnings.join(' ')
+                            : '';
+                          const risksText = Array.isArray(tsl?.reasons?.risks)
+                            ? tsl.reasons.risks.join(' ')
+                            : '';
+                          const hasIvCrush = /IV_CRUSH/i.test(risksText);
+                          const hasIvDown = /IV_DOWN/i.test(warningsText);
+
                           return (
                             <>
                               <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
@@ -3117,14 +3237,40 @@ const TrailData = () => {
                                       }}
                                     />
                                   )}
-                                  {tsl?.verdict && (
+                                  {hasIvCrush && (
                                     <Chip
                                       size="small"
-                                      label={`Verdict ${tsl.verdict}`}
+                                      label="IV_CRUSH"
                                       sx={{
-                                        backgroundColor: 'rgba(0, 255, 170, 0.10)',
-                                        color: '#00ffaa',
-                                        border: '1px solid rgba(0, 255, 170, 0.25)',
+                                        backgroundColor: 'rgba(244, 67, 54, 0.18)',
+                                        color: '#FF4444',
+                                        border: '1px solid rgba(244, 67, 54, 0.35)',
+                                        fontFamily: 'monospace',
+                                        fontWeight: 800,
+                                      }}
+                                    />
+                                  )}
+                                  {hasIvDown && (
+                                    <Chip
+                                      size="small"
+                                      label="IV_DOWN"
+                                      sx={{
+                                        backgroundColor: 'rgba(255, 152, 0, 0.16)',
+                                        color: '#FF9800',
+                                        border: '1px solid rgba(255, 152, 0, 0.30)',
+                                        fontFamily: 'monospace',
+                                        fontWeight: 800,
+                                      }}
+                                    />
+                                  )}
+                                  {verdictLabel && (
+                                    <Chip
+                                      size="small"
+                                      label={`Verdict ${verdictLabel}`}
+                                      sx={{
+                                        backgroundColor: 'rgba(255,255,255,0.08)',
+                                        color: verdictColor,
+                                        border: `1px solid ${verdictColor}40`,
                                         fontFamily: 'monospace'
                                       }}
                                     />
