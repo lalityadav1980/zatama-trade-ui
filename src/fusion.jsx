@@ -1862,7 +1862,7 @@ const Fusion = () => {
   const [orderDirection, setOrderDirection] = useState('desc');
   const [dense, setDense] = useState(true);
   const [colMenuEl, setColMenuEl] = useState(null);
-  const [analyticsOpen, setAnalyticsOpen] = useState(true); // Analytics dialog state - open by default
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
   
   // CSV Export dialog state
   const [csvExportOpen, setCsvExportOpen] = useState(false);
